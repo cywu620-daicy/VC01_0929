@@ -1,0 +1,6 @@
+{
+  "name": "小學數學探險：神奇體積小方塊",
+  "description": "專為國小四年級設計的互動式體積學習樂園：透過 3D 積木互動操作、長寬高公式可視化、分層拆解透視、複合形體與闖關挑戰，輕鬆掌握立方公分與體積計算！",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

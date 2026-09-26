@@ -1,0 +1,3941 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>神奇體積小方塊 - 國小四年級數學互動學習樂園</title>
+  <meta name="description" content="專為國小四年級設計的互動式體積學習樂園：透過 3D 積木互動操作、長寬高公式、透視隱藏方塊與複合形體拆解，輕鬆掌握體積與立方公分概念。">
+  <style>
+/* System Font and Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Base button and interaction */
+button, input, select {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px; /* Mobile touch friendly >= 44px */
+}
+
+/* Layout Container */
+.app-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Header */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #fde68a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  gap: 8px;
+}
+
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.2;
+}
+
+.tag-grade {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.brand-sub {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-header-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.15s;
+}
+
+.btn-knowledge {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.btn-knowledge:hover {
+  background: #fde68a;
+}
+
+.btn-sound {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+}
+.btn-sound.sound-active {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #d97706;
+}
+
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+}
+
+/* Nav Tabs */
+.nav-scroll {
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+.nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: max-content;
+  background: rgba(241, 245, 249, 0.85);
+  padding: 4px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #475569;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.tab-btn:hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.6);
+}
+.tab-btn.active {
+  background: #ffffff;
+  color: #92400e;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+.tab-btn.active svg {
+  color: #f59e0b;
+}
+
+/* Main Content Area */
+main {
+  flex: 1;
+  padding: 24px 0 36px;
+}
+
+.tab-pane {
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
+
+/* Cards & Layouts */
+.intro-banner {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 20px 24px;
+  border: 1px solid #fde68a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .intro-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+.intro-tagline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #d97706;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.intro-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #1e293b;
+  margin: 4px 0;
+}
+.intro-desc {
+  font-size: 0.92rem;
+  color: #475569;
+  line-height: 1.5;
+}
+.intro-highlight {
+  color: #b45309;
+  font-weight: 800;
+}
+
+.btn-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 16px;
+  background: #fef3c7;
+  color: #92400e;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  align-self: flex-start;
+  transition: all 0.15s;
+}
+.btn-read:hover {
+  background: #fde68a;
+}
+.btn-read.reading {
+  background: #d97706;
+  color: #ffffff;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+/* Two-column layout */
+.stage-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 992px) {
+  .stage-grid {
+    grid-template-columns: 7fr 5fr;
+  }
+}
+
+.panel-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 20px;
+  border: 1px solid #fde68a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+/* Canvas 3D Frame */
+.canvas-frame {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  min-height: 320px;
+  min-width: 0;
+  background: linear-gradient(to bottom, rgba(254, 243, 199, 0.5), rgba(255, 237, 213, 0.4));
+  border-radius: 20px;
+  border: 1px solid rgba(253, 230, 138, 0.8);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  user-select: none;
+}
+@media (max-width: 640px) {
+  .canvas-frame {
+    height: 340px;
+  }
+}
+.canvas-wrapper {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.canvas-wrapper canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+.canvas-wrapper canvas:active {
+  cursor: grabbing;
+}
+
+/* Floating Canvas Controls */
+.canvas-presets {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  z-index: 10;
+}
+.btn-preset {
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
+  border-radius: 8px;
+  min-height: 30px;
+  transition: all 0.1s;
+}
+.btn-preset:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.btn-preset.active-preset {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.canvas-tools {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  z-index: 10;
+}
+.btn-tool-icon {
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #475569;
+}
+.btn-tool-icon:hover {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.canvas-bottom-bar {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 10;
+}
+.canvas-bottom-bar > * {
+  pointer-events: auto;
+}
+
+.btn-toggle-feature {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  min-height: 34px;
+}
+.btn-toggle-feature.active {
+  background: #f59e0b;
+  color: #ffffff;
+  border-color: #d97706;
+}
+
+.layer-explode-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #334155;
+  min-height: 34px;
+}
+.layer-explode-box input[type="range"] {
+  width: 90px;
+  accent-color: #f59e0b;
+  cursor: pointer;
+}
+
+.canvas-tip {
+  position: absolute;
+  bottom: 48px;
+  left: 12px;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  .canvas-tip {
+    display: none;
+  }
+}
+
+/* Result Info Box */
+.info-result-box {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.result-val {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #b45309;
+}
+.result-formula {
+  font-size: 0.78rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: #92400e;
+  background: #ffffff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid #fde68a;
+}
+
+/* Right Column Options & Controls */
+.controls-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 20px;
+  border: 1px solid #fde68a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.option-group-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-option-card {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: all 0.15s;
+}
+.btn-option-card:hover {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+.btn-option-card.selected {
+  border-color: #f59e0b;
+  background: rgba(254, 243, 199, 0.6);
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.1);
+}
+
+.option-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.option-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+.option-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+.option-subtitle {
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+/* Callout Boxes */
+.callout-box {
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.callout-blue {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+}
+.callout-amber {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #78350f;
+}
+
+/* Next / Action Buttons */
+.btn-go-next {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  transition: all 0.15s;
+  min-height: 50px;
+}
+.btn-go-next:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+.btn-go-next:active {
+  transform: scale(0.98);
+}
+
+/* Sliders */
+.slider-container {
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid;
+  margin-bottom: 10px;
+}
+.slider-container.slider-blue {
+  background: rgba(239, 246, 255, 0.6);
+  border-color: #bfdbfe;
+}
+.slider-container.slider-green {
+  background: rgba(236, 253, 245, 0.6);
+  border-color: #a7f3d0;
+}
+.slider-container.slider-amber {
+  background: rgba(254, 243, 199, 0.6);
+  border-color: #fde68a;
+}
+.slider-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.slider-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+.slider-val-badge {
+  font-size: 0.85rem;
+  font-weight: 900;
+  font-family: monospace;
+  background: #ffffff;
+  padding: 2px 8px;
+  border-radius: 8px;
+  border: 1px solid currentColor;
+}
+.slider-range {
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+/* Formula Step Indicator */
+.step-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 12px;
+}
+.btn-step {
+  padding: 5px 10px;
+  border-radius: 9px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #475569;
+  min-height: 32px;
+}
+.btn-step.active {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+/* Palette & Presets in Builder */
+.palette-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.color-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 2px solid transparent;
+}
+.color-dot:hover {
+  transform: scale(1.08);
+}
+.color-dot.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px #f59e0b;
+  transform: scale(1.12);
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn-preset-card {
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  text-align: left;
+  transition: all 0.15s;
+}
+.btn-preset-card:hover {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+.preset-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1e293b;
+  display: block;
+}
+.preset-vol {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+/* Quiz Styles */
+.quiz-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.btn-quiz-opt {
+  padding: 16px 12px;
+  border-radius: 18px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  text-align: center;
+  transition: all 0.15s;
+  min-height: 64px;
+}
+.btn-quiz-opt:hover:not(:disabled) {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+.btn-quiz-opt .opt-val {
+  font-size: 1.6rem;
+  font-weight: 900;
+  font-family: monospace;
+  display: block;
+}
+.btn-quiz-opt .opt-unit {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 700;
+}
+.btn-quiz-opt.opt-correct {
+  background: #ecfdf5 !important;
+  border-color: #10b981 !important;
+  color: #065f46 !important;
+  box-shadow: 0 0 0 2px #34d399;
+}
+.btn-quiz-opt.opt-wrong {
+  background: #fff1f2 !important;
+  border-color: #f43f5e !important;
+  color: #9f1239 !important;
+  text-decoration: line-through;
+}
+.btn-quiz-opt.opt-dim {
+  opacity: 0.5;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-overlay.open {
+  display: flex;
+}
+.modal-window {
+  background: #ffffff;
+  border-radius: 28px;
+  max-width: 640px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid #fde68a;
+}
+.modal-head {
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.trivia-item {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid;
+}
+.trivia-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+.modal-foot {
+  padding: 14px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Confetti Canvas */
+#confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="app-container">
+      <div class="header-top">
+        <div class="brand-badge">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          </div>
+          <div>
+            <div class="brand-title">
+              神奇體積小方塊
+              <span class="tag-grade">四年級數學</span>
+            </div>
+            <div class="brand-sub">動手玩 3D 積木 · 掌握立方公分與長方體體積公式</div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button id="btn-open-knowledge" class="btn-header-action btn-knowledge" title="體積生活小百科">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            <span>生活小百科</span>
+          </button>
+          <button id="btn-sound-toggle" class="btn-sound sound-active" title="音效已開啟">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          </button>
+          <div class="score-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+            <span id="header-quiz-score">★ 0 分</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Segmented Nav Tabs -->
+      <div class="nav-scroll">
+        <nav class="nav-tabs">
+          <button class="tab-btn active" data-tab="concept">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <span>1. 認識體積</span>
+          </button>
+          <button class="tab-btn" data-tab="formula">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span>2. 長寬高公式</span>
+          </button>
+          <button class="tab-btn" data-tab="hidden">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>3. 透視隱藏積木</span>
+          </button>
+          <button class="tab-btn" data-tab="composite">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.439 7.85c0-1.57.8-2.35 2.56-2.85-2-5-6-5-8-2-.5 1-1.5 1-2 0-2-3-6-3-8 2 1.76.5 2.56 1.28 2.56 2.85 0 1.57-.8 2.35-2.56 2.85 2 5 6 5 8 2 .5-1 1.5-1 2 0 2 3 6 3 8-2-1.76-.5-2.56-1.28-2.56-2.85z"></path></svg>
+            <span>4. 複合形體拆解</span>
+          </button>
+          <button class="tab-btn" data-tab="builder">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9"></path><path d="M17.64 15 22 10.64"></path><path d="m20.91 3.26-1.57-1.57a1.5 1.5 0 0 0-2.12 0l-3.3 3.3a1.5 1.5 0 0 0 0 2.12l1.57 1.57"></path></svg>
+            <span>5. 自由建造室</span>
+          </button>
+          <button class="tab-btn" data-tab="quiz">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+            <span>6. 冒險闖關</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="app-container">
+    <!-- TAB 1: 認識體積 -->
+    <div id="tab-concept" class="tab-pane active">
+      <div class="intro-banner">
+        <div>
+          <div class="intro-tagline">單元一 · 基礎核心概念 · 國小四年級數學</div>
+          <h2 class="intro-title">什麼是體積？認識 1 立方公分（1 cm³）</h2>
+          <p class="intro-desc">
+            物體在空間中佔據的大小，就稱為「<span class="intro-highlight">體積</span>」。
+            邊長為 1 公分的正方體，體積就是 <span class="intro-highlight">1 立方公分</span>。
+          </p>
+        </div>
+        <button id="btn-read-concept" class="btn-read">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          <span>小老師語音導讀</span>
+        </button>
+      </div>
+
+      <div class="stage-grid">
+        <!-- Left: 3D Visualization -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              <span>3D 實體觀察區</span>
+            </div>
+            <div style="font-size:0.8rem;background:#fef3c7;padding:4px 10px;border-radius:8px;font-weight:700;color:#92400e">
+              積木數量：<span id="concept-count-val" style="font-size:0.95rem;color:#d97706">1</span> 個
+            </div>
+          </div>
+
+          <div class="canvas-frame" id="canvas-concept" data-tab="concept">
+            <div class="canvas-presets">
+              <button class="btn-preset active-preset" data-view="iso">3D等角</button>
+              <button class="btn-preset" data-view="top">俯視</button>
+              <button class="btn-preset" data-view="front">正視</button>
+              <button class="btn-preset" data-view="side">右側</button>
+            </div>
+            <div class="canvas-tools">
+              <button class="btn-tool-icon btn-zoom-in" title="放大"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-zoom-out" title="縮小"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-reset-view" title="重置視角"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+            </div>
+            <div class="canvas-bottom-bar">
+              <div style="display:flex;gap:6px">
+                <button class="btn-toggle-feature btn-toggle-grid active" title="開關地板格線">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  <span>格線</span>
+                </button>
+              </div>
+            </div>
+            <div class="canvas-tip">💡 滑鼠或手指拖曳旋轉 · 滾輪縮放</div>
+            <div class="canvas-wrapper">
+              <canvas></canvas>
+            </div>
+          </div>
+
+          <div class="info-result-box">
+            <div>
+              <div style="font-size:0.75rem;font-weight:700;color:#64748b">這個形體的體積是：</div>
+              <div class="result-val"><span id="concept-result-val">1</span> <span style="font-size:0.85rem;color:#475569">立方公分（cm³）</span></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.72rem;color:#64748b">算式原理</div>
+              <div class="result-formula" id="concept-result-formula">1 cm³ × 1 個 = 1 cm³</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Shape Selectors -->
+        <div class="controls-card">
+          <div class="option-group-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+            <span>切換不同形體觀察</span>
+          </div>
+          <p style="font-size:0.82rem;color:#475569">點擊下列按鈕，看看相同的「12塊積木」能變出哪些形狀：</p>
+
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn-option-card btn-concept-shape selected" data-shape="single">
+              <div class="option-card-left">
+                <div class="option-avatar" style="background:#3b82f6">1</div>
+                <div>
+                  <div class="option-title">認識 1 個基準方塊</div>
+                  <div class="option-subtitle">1cm × 1cm × 1cm = 1 立方公分</div>
+                </div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+
+            <button class="btn-option-card btn-concept-shape" data-shape="line">
+              <div class="option-card-left">
+                <div class="option-avatar" style="background:#3b82f6">12</div>
+                <div>
+                  <div class="option-title">形狀 A：排成一直線長條</div>
+                  <div class="option-subtitle">12 塊排成一長排 (12 × 1 × 1)</div>
+                </div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+
+            <button class="btn-option-card btn-concept-shape" data-shape="flat">
+              <div class="option-card-left">
+                <div class="option-avatar" style="background:#10b981">12</div>
+                <div>
+                  <div class="option-title">形狀 B：排成一片扁平長方體</div>
+                  <div class="option-subtitle">長 4、寬 3、高 1 (4 × 3 × 1)</div>
+                </div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+
+            <button class="btn-option-card btn-concept-shape" data-shape="box">
+              <div class="option-card-left">
+                <div class="option-avatar" style="background:#f59e0b">12</div>
+                <div>
+                  <div class="option-title">形狀 C：堆成雙層長方體</div>
+                  <div class="option-subtitle">每層 6 個，堆 2 層 (3 × 2 × 2)</div>
+                </div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+
+            <button class="btn-option-card btn-concept-shape" data-shape="stairs">
+              <div class="option-card-left">
+                <div class="option-avatar" style="background:#8b5cf6">12</div>
+                <div>
+                  <div class="option-title">形狀 D：堆成三層階梯</div>
+                  <div class="option-subtitle">第1層6個 + 第2層4個 + 第3層2個</div>
+                </div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </button>
+          </div>
+
+          <div class="callout-box callout-blue">
+            💡 <b>超級重要觀念（體積守恆）：</b><br>
+            形狀雖然完全變了，但只要小積木沒有增加也沒有減少，它們的體積就<b>完全一樣大</b>！
+          </div>
+
+          <button id="btn-next-concept" class="btn-go-next">
+            <span>前往單元二：長寬高魔法公式</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: 長寬高公式 -->
+    <div id="tab-formula" class="tab-pane">
+      <div class="intro-banner">
+        <div>
+          <div class="intro-tagline">單元二 · 核心公式 · 國小四年級數學</div>
+          <h2 class="intro-title">長方體與正方體體積公式</h2>
+          <p class="intro-desc">
+            不用一顆一顆辛苦數！透過「<span class="intro-highlight">長 × 寬 × 高</span>」，秒算積木總個數與體積。
+          </p>
+        </div>
+        <button id="btn-read-formula" class="btn-read">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          <span>語音聽解說</span>
+        </button>
+      </div>
+
+      <div class="stage-grid">
+        <!-- Left: 3D Visualization -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              <span>3D 長寬高實體透視</span>
+            </div>
+            <div class="step-nav">
+              <button class="btn-step btn-formula-step" data-step="1">步驟1:數長度</button>
+              <button class="btn-step btn-formula-step" data-step="2">步驟2:數一層</button>
+              <button class="btn-step btn-formula-step active" data-step="3">步驟3:乘層數</button>
+            </div>
+          </div>
+
+          <div class="canvas-frame" id="canvas-formula" data-tab="formula">
+            <div class="canvas-presets">
+              <button class="btn-preset active-preset" data-view="iso">3D等角</button>
+              <button class="btn-preset" data-view="top">俯視</button>
+              <button class="btn-preset" data-view="front">正視</button>
+              <button class="btn-preset" data-view="side">右側</button>
+            </div>
+            <div class="canvas-tools">
+              <button class="btn-tool-icon btn-zoom-in" title="放大"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-zoom-out" title="縮小"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-reset-view" title="重置視角"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+            </div>
+            <div class="canvas-bottom-bar">
+              <button class="btn-toggle-feature btn-toggle-grid active" title="開關地板格線">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>格線</span>
+              </button>
+            </div>
+            <div class="canvas-tip">💡 滑鼠或手指拖曳旋轉 · 滾輪縮放</div>
+            <div class="canvas-wrapper">
+              <canvas></canvas>
+            </div>
+          </div>
+
+          <div class="info-result-box" style="flex-direction:column;align-items:stretch">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:0.75rem;font-weight:800;color:#92400e" id="formula-title-badge">長方體體積算式</span>
+              <span style="font-size:0.75rem;color:#64748b" id="formula-step-info">每層有 12 塊 × 堆了 2 層</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:1.3rem;font-weight:900;margin-top:6px">
+              <span style="color:#2563eb;background:#eff6ff;padding:4px 10px;border-radius:10px;border:1px solid #bfdbfe">
+                <span id="formula-calc-len">4</span> <small style="font-size:0.65rem;color:#3b82f6;display:block">長 (cm)</small>
+              </span>
+              <span style="color:#94a3b8">×</span>
+              <span style="color:#059669;background:#ecfdf5;padding:4px 10px;border-radius:10px;border:1px solid #a7f3d0">
+                <span id="formula-calc-wid">3</span> <small style="font-size:0.65rem;color:#10b981;display:block">寬 (cm)</small>
+              </span>
+              <span style="color:#94a3b8">×</span>
+              <span style="color:#d97706;background:#fffbeb;padding:4px 10px;border-radius:10px;border:1px solid #fde68a">
+                <span id="formula-calc-hei">2</span> <small style="font-size:0.65rem;color:#f59e0b;display:block">高 (cm)</small>
+              </span>
+              <span style="color:#94a3b8">=</span>
+              <span style="color:#ea580c;background:#ffffff;padding:4px 14px;border-radius:12px;border:2px solid #fb923c">
+                <span id="formula-calc-total">24</span> <small style="font-size:0.65rem;color:#64748b;display:block">cm³（立方公分）</small>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Sliders -->
+        <div class="controls-card">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div class="option-group-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+              <span>調整長寬高滑桿</span>
+            </div>
+            <button id="btn-toggle-cube" class="btn-preset" style="border:1px solid #cbd5e1;padding:6px 10px">
+              切換為正方體
+            </button>
+          </div>
+
+          <!-- Slider Length -->
+          <div class="slider-container slider-blue">
+            <div class="slider-top">
+              <span class="slider-label" style="color:#1e3a8a" id="slider-len-title">長（Length）</span>
+              <span class="slider-val-badge" style="color:#1d4ed8" id="f-val-len">4 cm</span>
+            </div>
+            <input type="range" min="1" max="6" value="4" class="slider-range" id="slider-len" style="accent-color:#2563eb">
+          </div>
+
+          <!-- Slider Width -->
+          <div class="slider-container slider-green" id="container-slider-wid">
+            <div class="slider-top">
+              <span class="slider-label" style="color:#064e3b">寬（Width）</span>
+              <span class="slider-val-badge" style="color:#047857" id="f-val-wid">3 cm</span>
+            </div>
+            <input type="range" min="1" max="5" value="3" class="slider-range" id="slider-wid" style="accent-color:#059669">
+          </div>
+
+          <!-- Slider Height -->
+          <div class="slider-container slider-amber" id="container-slider-hei">
+            <div class="slider-top">
+              <span class="slider-label" style="color:#78350f">高（Height - 堆幾層）</span>
+              <span class="slider-val-badge" style="color:#b45309" id="f-val-hei">2 cm</span>
+            </div>
+            <input type="range" min="1" max="4" value="2" class="slider-range" id="slider-hei" style="accent-color:#d97706">
+          </div>
+
+          <div class="callout-box" style="background:#f8fafc;border:1px solid #e2e8f0;color:#334155">
+            <b style="color:#b45309">🎯 為什麼是「長 × 寬 × 高」？</b>
+            <ol style="margin-left:18px;margin-top:6px;font-size:0.78rem;line-height:1.6">
+              <li>一排排了 <b style="color:#2563eb" id="f-explain-len">4</b> 個積木。</li>
+              <li>底層排了 <b style="color:#059669" id="f-explain-wid">3</b> 排，所以一層共有 <b id="f-explain-base">4 × 3 = 12</b> 個積木。</li>
+              <li>向上堆疊了 <b style="color:#d97706" id="f-explain-hei">2</b> 層，所以總共是 <b id="f-explain-total">12 × 2 = 24</b> 個小積木！</li>
+            </ol>
+          </div>
+
+          <button id="btn-next-formula" class="btn-go-next">
+            <span>前往單元三：透視眼與隱藏積木</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: 透視隱藏積木 -->
+    <div id="tab-hidden" class="tab-pane">
+      <div class="intro-banner">
+        <div>
+          <div class="intro-tagline">單元三 · 空間思維訓練 · 國小四年級常考陷阱</div>
+          <h2 class="intro-title">透視眼與隱藏積木</h2>
+          <p class="intro-desc">
+            小心！上面的積木不會憑空浮起來，它的下方一定有「<span class="intro-highlight">隱藏積木</span>」在默默支撐！
+          </p>
+        </div>
+        <button id="btn-read-hidden" class="btn-read">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          <span>聽小老師解說</span>
+        </button>
+      </div>
+
+      <div class="stage-grid">
+        <!-- Left: 3D Visualization -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <span>3D 透視空間觀察</span>
+            </div>
+            <button id="btn-toggle-hidden-hl" class="btn-preset" style="border:1px solid #cbd5e1;padding:6px 12px">
+              標記隱藏積木 (藏)
+            </button>
+          </div>
+
+          <div class="canvas-frame" id="canvas-hidden" data-tab="hidden">
+            <div class="canvas-presets">
+              <button class="btn-preset active-preset" data-view="iso">3D等角</button>
+              <button class="btn-preset" data-view="top">俯視</button>
+              <button class="btn-preset" data-view="front">正視</button>
+              <button class="btn-preset" data-view="side">右側</button>
+            </div>
+            <div class="canvas-tools">
+              <button class="btn-tool-icon btn-zoom-in" title="放大"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-zoom-out" title="縮小"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-reset-view" title="重置視角"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+            </div>
+            <div class="canvas-bottom-bar">
+              <div style="display:flex;gap:6px">
+                <button class="btn-toggle-feature btn-toggle-xray" title="透視X光模式">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <span class="xray-text">透視眼 關</span>
+                </button>
+                <button class="btn-toggle-feature btn-toggle-grid active" title="開關地板格線">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  <span>格線</span>
+                </button>
+              </div>
+              <div class="layer-explode-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <span>分層展開:</span>
+                <input type="range" min="0" max="1.5" step="0.05" value="0" class="range-explode">
+                <span class="explode-val-label" style="font-size:0.7rem;color:#b45309">合</span>
+              </div>
+            </div>
+            <div class="canvas-tip">💡 滑鼠或手指拖曳旋轉 · 滾輪縮放</div>
+            <div class="canvas-wrapper">
+              <canvas></canvas>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px">
+            <div style="padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;text-align:center">
+              <span style="font-size:0.72rem;color:#64748b;display:block">表面可見積木</span>
+              <b style="font-size:1.15rem;color:#334155" id="hidden-visible-val">10 個</b>
+            </div>
+            <div style="padding:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:14px;text-align:center">
+              <span style="font-size:0.72rem;color:#92400e;display:block;font-weight:700">底層被遮住的積木</span>
+              <b style="font-size:1.15rem;color:#d97706" id="hidden-hidden-val">+2 個</b>
+            </div>
+            <div style="padding:12px;background:#fff7ed;border:1px solid #ffedd5;border-radius:14px;text-align:center">
+              <span style="font-size:0.72rem;color:#c2410c;display:block;font-weight:700">真實全部體積</span>
+              <b style="font-size:1.15rem;color:#ea580c" id="hidden-total-val">12 cm³</b>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Model selection & Secret tip -->
+        <div class="controls-card">
+          <div class="option-group-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+            <span>選擇陷阱題型測試</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button class="btn-option-card btn-hidden-model selected" data-model="corner">
+              <div>
+                <div class="option-title">形體一：角落高塔</div>
+                <div class="option-subtitle">高塔下方藏了 2 塊支撐積木，正面容易少數！</div>
+              </div>
+            </button>
+            <button class="btn-option-card btn-hidden-model" data-model="podium">
+              <div>
+                <div class="option-title">形體二：中心升降台</div>
+                <div class="option-subtitle">正中間柱體被四周包圍，底層核心完全看不到！</div>
+              </div>
+            </button>
+            <button class="btn-option-card btn-hidden-model" data-model="arch">
+              <div>
+                <div class="option-title">形體三：雙層斜坡階梯</div>
+                <div class="option-subtitle">斜坡下方的底層盲區，練習用「分層抽屜展開」檢查！</div>
+              </div>
+            </button>
+          </div>
+
+          <div class="callout-box callout-amber">
+            <b style="color:#78350f">⚠️ 大考解題神技巧：「分層法」</b><br>
+            遇到複雜形體，不要亂數！記住這句口訣：<br>
+            <b style="color:#92400e">「由下往上數，一層一層寫下來再相加！」</b><br>
+            例如：第 1 層有幾個、第 2 層有幾個、第 3 層有幾個，這樣不管有多少隱藏積木都不會漏算！
+          </div>
+
+          <button id="btn-next-hidden" class="btn-go-next">
+            <span>前往單元四：複合形體拆解（切割與補齊）</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: 複合形體拆解 -->
+    <div id="tab-composite" class="tab-pane">
+      <div class="intro-banner">
+        <div>
+          <div class="intro-tagline">單元四 · 解題絕招 · 國小四年級進階</div>
+          <h2 class="intro-title">複合形體拆解：切割法 vs 補齊法</h2>
+          <p class="intro-desc">
+            遇到長相奇特的形體別害怕！用「<span class="intro-highlight">切割相加</span>」或「<span class="intro-highlight">補齊相減</span>」，輕鬆拆解成簡單長方體！
+          </p>
+        </div>
+        <button id="btn-read-composite" class="btn-read">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          <span>聽小老師解說</span>
+        </button>
+      </div>
+
+      <div class="stage-grid">
+        <!-- Left: 3D Visualization -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.439 7.85c0-1.57.8-2.35 2.56-2.85-2-5-6-5-8-2-.5 1-1.5 1-2 0-2-3-6-3-8 2 1.76.5 2.56 1.28 2.56 2.85 0 1.57-.8 2.35-2.56 2.85 2 5 6 5 8 2 .5-1 1.5-1 2 0 2 3 6 3 8-2-1.76-.5-2.56-1.28-2.56-2.85z"></path></svg>
+              <span>3D 切割與補齊動態展示</span>
+            </div>
+            <span style="font-size:0.75rem;font-weight:700;color:#64748b" id="comp-strategy-label">切割法（分段加）</span>
+          </div>
+
+          <div class="canvas-frame" id="canvas-composite" data-tab="composite">
+            <div class="canvas-presets">
+              <button class="btn-preset active-preset" data-view="iso">3D等角</button>
+              <button class="btn-preset" data-view="top">俯視</button>
+              <button class="btn-preset" data-view="front">正視</button>
+              <button class="btn-preset" data-view="side">右側</button>
+            </div>
+            <div class="canvas-tools">
+              <button class="btn-tool-icon btn-zoom-in" title="放大"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-zoom-out" title="縮小"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-reset-view" title="重置視角"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+            </div>
+            <div class="canvas-bottom-bar">
+              <button class="btn-toggle-feature btn-toggle-grid active" title="開關地板格線">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>格線</span>
+              </button>
+            </div>
+            <div class="canvas-tip">💡 滑鼠或手指拖曳旋轉 · 滾輪縮放</div>
+            <div class="canvas-wrapper">
+              <canvas></canvas>
+            </div>
+          </div>
+
+          <!-- Dynamic Formula Box -->
+          <div class="info-result-box" style="flex-direction:column;align-items:stretch">
+            <div style="font-size:0.75rem;font-weight:800;color:#92400e">🧮 算式步驟拆解</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0">
+              <div style="padding:8px 12px;background:#ffffff;border:1px solid #fde68a;border-radius:10px;font-size:0.78rem;font-weight:700" id="comp-formula-a">
+                左長方體 A：2 × 2 × 3 = 12 cm³
+              </div>
+              <div style="padding:8px 12px;background:#ffffff;border:1px solid #fde68a;border-radius:10px;font-size:0.78rem;font-weight:700" id="comp-formula-b">
+                右長方體 B：2 × 2 × 1 = 4 cm³
+              </div>
+            </div>
+            <div style="border-top:1px solid #fde68a;padding-top:6px;display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:0.75rem;color:#64748b;font-weight:700">最終計算結果：</span>
+              <span style="font-size:1.1rem;font-weight:900;color:#b45309" id="comp-formula-total">體積 = 12 + 4 = 16 立方公分</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Strategy options -->
+        <div class="controls-card">
+          <div>
+            <div class="option-group-title" style="margin-bottom:8px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+              <span>1. 選擇複合形體造型</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+              <button class="btn-option-card btn-comp-shape selected" data-shape="l-shape" style="justify-content:center;padding:8px;font-weight:800;font-size:0.82rem">L 型柱體</button>
+              <button class="btn-option-card btn-comp-shape" data-shape="u-shape" style="justify-content:center;padding:8px;font-weight:800;font-size:0.82rem">凹字型拱門</button>
+              <button class="btn-option-card btn-comp-shape" data-shape="steps" style="justify-content:center;padding:8px;font-weight:800;font-size:0.82rem">三階樓梯</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="option-group-title" style="margin-bottom:8px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.439 7.85c0-1.57.8-2.35 2.56-2.85-2-5-6-5-8-2-.5 1-1.5 1-2 0-2-3-6-3-8 2 1.76.5 2.56 1.28 2.56 2.85 0 1.57-.8 2.35-2.56 2.85 2 5 6 5 8 2 .5-1 1.5-1 2 0 2 3 6 3 8-2-1.76-.5-2.56-1.28-2.56-2.85z"></path></svg>
+              <span>2. 選擇解題策略</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="btn-option-card btn-comp-strat selected" data-strat="split-v">
+                <div>
+                  <div class="option-title">切割法（直切，由上往下切）</div>
+                  <div class="option-subtitle">切成左邊高立柱 + 右邊低底座</div>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </button>
+
+              <button class="btn-option-card btn-comp-strat" data-strat="split-h" id="btn-comp-strat-h">
+                <div>
+                  <div class="option-title">切割法（橫切，水平切）</div>
+                  <div class="option-subtitle">切成上方小方塊 + 下方大長方底座</div>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </button>
+
+              <button class="btn-option-card btn-comp-strat" data-strat="fill">
+                <div>
+                  <div class="option-title">補齊法（填補缺角再減去）</div>
+                  <div class="option-subtitle">虛線補成完整大長方體，再扣掉缺角</div>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="callout-box callout-blue">
+            💡 <b>小朋友發現了嗎？</b><br>
+            不管用「直切」還是「橫切」，算出來的體積都是一樣的！選你覺得最好算的方法就可以囉！
+          </div>
+
+          <button id="btn-next-composite" class="btn-go-next">
+            <span>前往單元五：自由建造實驗室</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: 自由建造室 -->
+    <div id="tab-builder" class="tab-pane">
+      <div class="intro-banner">
+        <div>
+          <div class="intro-tagline">單元五 · 自由創作與實作 · 國小四年級建築師</div>
+          <h2 class="intro-title">小小建築師：自由建造實驗室</h2>
+          <p class="intro-desc">
+            點擊地板或積木表面即可堆疊，隨時觀察你親手蓋出的城堡有幾立方公分！
+          </p>
+        </div>
+        <div class="score-badge" style="padding:10px 18px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          <div>
+            <div style="font-size:0.68rem;opacity:0.9">作品總體積</div>
+            <div style="font-size:1.4rem;font-weight:900" id="builder-total-badge">3 cm³</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-grid">
+        <!-- Left: 3D Canvas -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div style="display:flex;align-items:center;gap:8px">
+              <button id="btn-tool-build" class="btn-toggle-feature active">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>建造模式 (放置)</span>
+              </button>
+              <button id="btn-tool-delete" class="btn-toggle-feature">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <span>敲碎模式 (刪除)</span>
+              </button>
+            </div>
+            <button id="btn-builder-clear" class="btn-preset" style="color:#ef4444">清空全部</button>
+          </div>
+
+          <div class="canvas-frame" id="canvas-builder" data-tab="builder">
+            <div class="canvas-presets">
+              <button class="btn-preset active-preset" data-view="iso">3D等角</button>
+              <button class="btn-preset" data-view="top">俯視</button>
+              <button class="btn-preset" data-view="front">正視</button>
+              <button class="btn-preset" data-view="side">右側</button>
+            </div>
+            <div class="canvas-tools">
+              <button class="btn-tool-icon btn-zoom-in" title="放大"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-zoom-out" title="縮小"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+              <button class="btn-tool-icon btn-reset-view" title="重置視角"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+            </div>
+            <div class="canvas-bottom-bar">
+              <div style="display:flex;gap:6px">
+                <button class="btn-toggle-feature btn-toggle-grid active" title="開關地板格線">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  <span>格線</span>
+                </button>
+              </div>
+              <div class="layer-explode-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <span>分層展開:</span>
+                <input type="range" min="0" max="1.5" step="0.05" value="0" class="range-explode">
+                <span class="explode-val-label" style="font-size:0.7rem;color:#b45309">合</span>
+              </div>
+            </div>
+            <div class="canvas-tip">💡 點擊網格放置 · 點擊積木表面堆疊</div>
+            <div class="canvas-wrapper">
+              <canvas></canvas>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;padding:12px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-size:0.78rem">
+            <b style="color:#334155">各樓層積木統計：</b>
+            <div id="builder-layer-stats" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+          </div>
+        </div>
+
+        <!-- Right: Colors & Presets -->
+        <div class="controls-card">
+          <div>
+            <div class="option-group-title">選擇積木顏色</div>
+            <div class="palette-row">
+              <div class="color-dot active" data-color="#3b82f6" style="background:#3b82f6" title="天藍"></div>
+              <div class="color-dot" data-color="#10b981" style="background:#10b981" title="翠綠"></div>
+              <div class="color-dot" data-color="#f59e0b" style="background:#f59e0b" title="陽光黃"></div>
+              <div class="color-dot" data-color="#ec4899" style="background:#ec4899" title="莓果粉"></div>
+              <div class="color-dot" data-color="#8b5cf6" style="background:#8b5cf6" title="紫羅蘭"></div>
+              <div class="color-dot" data-color="#f97316" style="background:#f97316" title="珊瑚橘"></div>
+              <div class="color-dot" data-color="#06b6d4" style="background:#06b6d4" title="薄荷綠"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="option-group-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+              <span>一鍵載入經典作品</span>
+            </div>
+            <div class="preset-grid">
+              <button class="btn-preset-card" data-preset="heart">
+                <span class="preset-name">💖 愛心</span>
+                <span class="preset-vol">體積：13 cm³</span>
+              </button>
+              <button class="btn-preset-card" data-preset="puppy">
+                <span class="preset-name">🐕 可愛小狗</span>
+                <span class="preset-vol">體積：19 cm³</span>
+              </button>
+              <button class="btn-preset-card" data-preset="castle">
+                <span class="preset-name">🏰 城堡塔樓</span>
+                <span class="preset-vol">體積：18 cm³</span>
+              </button>
+              <button class="btn-preset-card" data-preset="robot">
+                <span class="preset-name">🤖 體積機器人</span>
+                <span class="preset-vol">體積：13 cm³</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="callout-box callout-amber">
+            <b style="color:#78350f">💡 操作小密技：</b>
+            <ul style="margin-left:18px;margin-top:4px;font-size:0.76rem;line-height:1.5">
+              <li>點擊地板網格：在地面放小積木。</li>
+              <li>點擊積木的上方或側面：往外或往上堆疊。</li>
+              <li>切換「敲碎模式」：點擊不需要的積木即可移除。</li>
+            </ul>
+          </div>
+
+          <button id="btn-next-builder" class="btn-go-next">
+            <span>前往單元六：冒險闖關大挑戰！</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: 冒險闖關 -->
+    <div id="tab-quiz" class="tab-pane">
+      <div id="quiz-stage-area">
+        <div class="intro-banner">
+          <div style="width:100%">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="tag-grade" id="quiz-badge">基礎暖身</span>
+                <span style="font-size:0.75rem;color:#64748b" id="quiz-step-info">第 1 / 10 題</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <button id="btn-read-quiz" class="btn-read" style="padding:6px 12px;font-size:0.78rem">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                  <span>讀題目</span>
+                </button>
+                <div style="font-size:0.82rem;font-weight:800;color:#92400e;background:#fef3c7;padding:6px 12px;border-radius:10px" id="quiz-score-display">
+                  目前得分：0 分
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div style="width:100%;height:6px;background:#e2e8f0;border-radius:9999px;overflow:hidden;margin-bottom:12px">
+              <div id="quiz-progress-bar" style="width:10%;height:100%;background:#f59e0b;transition:width 0.3s"></div>
+            </div>
+
+            <h2 class="intro-title" id="quiz-question-title" style="font-size:1.25rem">
+              第 1 關：請觀察 3D 形體，每個小積木是 1 立方公分，這個形體的體積是多少立方公分？
+            </h2>
+          </div>
+        </div>
+
+        <div class="stage-grid">
+          <!-- Left: 3D Visualization -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <span style="font-size:0.8rem;font-weight:700;color:#64748b">3D 模型檢視（可旋轉視角、開透視眼）</span>
+              <button id="btn-toggle-quiz-hint" style="font-size:0.75rem;font-weight:700;color:#b45309;display:flex;align-items:center;gap:4px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <span>解題小錦囊</span>
+              </button>
+            </div>
+
+            <div class="canvas-frame" id="canvas-quiz" data-tab="quiz">
+              <div class="canvas-presets">
+                <button class="btn-preset active-preset" data-view="iso">3D等角</button>
+                <button class="btn-preset" data-view="top">俯視</button>
+                <button class="btn-preset" data-view="front">正視</button>
+                <button class="btn-preset" data-view="side">右側</button>
+              </div>
+              <div class="canvas-tools">
+                <button class="btn-tool-icon btn-zoom-in" title="放大"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+                <button class="btn-tool-icon btn-zoom-out" title="縮小"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+                <button class="btn-tool-icon btn-reset-view" title="重置視角"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+              </div>
+              <div class="canvas-bottom-bar">
+                <div style="display:flex;gap:6px">
+                  <button class="btn-toggle-feature btn-toggle-xray" title="透視X光模式">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <span class="xray-text">透視眼 關</span>
+                  </button>
+                  <button class="btn-toggle-feature btn-toggle-grid active" title="開關地板格線">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>格線</span>
+                  </button>
+                </div>
+                <div class="layer-explode-box">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                  <span>分層展開:</span>
+                  <input type="range" min="0" max="1.5" step="0.05" value="0" class="range-explode">
+                  <span class="explode-val-label" style="font-size:0.7rem;color:#b45309">合</span>
+                </div>
+              </div>
+              <div class="canvas-tip">💡 滑鼠或手指拖曳旋轉 · 滾輪縮放</div>
+              <div class="canvas-wrapper">
+                <canvas></canvas>
+              </div>
+            </div>
+
+            <div id="quiz-hint-card" class="callout-box callout-amber" style="margin-top:12px;display:none"></div>
+          </div>
+
+          <!-- Right: Options & Feedback -->
+          <div class="controls-card">
+            <div class="option-group-title">請選擇正確答案：</div>
+            <div class="quiz-options-grid" id="quiz-options-container"></div>
+
+            <div id="quiz-feedback-box" style="display:none"></div>
+
+            <button id="btn-next-question" class="btn-go-next" style="display:none">
+              <span>前進下一關！</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completion Screen -->
+      <div id="quiz-completion-screen" style="display:none;background:#ffffff;border-radius:28px;padding:36px;border:1px solid #fde68a;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.05);max-width:700px;margin:20px auto">
+        <div style="width:72px;height:72px;background:linear-gradient(135deg,#f59e0b,#ea580c);border-radius:24px;display:flex;align-items:center;justify-content:center;color:#fff;margin:0 auto 16px;box-shadow:0 4px 14px rgba(245,158,11,0.3)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+        </div>
+        <div style="font-size:0.8rem;font-weight:800;color:#d97706;letter-spacing:0.05em;text-transform:uppercase">闖關大獲全勝！</div>
+        <h2 style="font-size:1.8rem;font-weight:900;color:#1e293b;margin:6px 0">恭喜獲得「四年級體積小大師」榮譽勳章！🎖️</h2>
+        <p style="font-size:0.9rem;color:#475569;max-width:500px;margin:0 auto">你已經掌握了 1 立方公分、長寬高公式、隱藏積木透視與複合形體切割法！</p>
+
+        <div id="quiz-stars-display" style="font-size:2.4rem;margin:16px 0"></div>
+
+        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:18px;padding:18px;display:inline-block;min-width:260px;margin:10px 0 20px">
+          <div style="font-size:0.8rem;color:#64748b;font-weight:700">最終獲得積分</div>
+          <div style="font-size:2.5rem;font-weight:900;color:#b45309;font-family:monospace">
+            <span id="quiz-final-score">100</span> <small style="font-size:1rem;color:#475569">/ 100 分</small>
+          </div>
+          <div style="font-size:0.75rem;color:#92400e;font-weight:800;margin-top:4px" id="quiz-final-comment">太神了！滿分級別的空間立體思維！</div>
+        </div>
+
+        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+          <button id="btn-quiz-retry" class="btn-go-next" style="width:auto;padding:12px 24px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            <span>再挑戰一次</span>
+          </button>
+          <button id="btn-quiz-review" class="btn-option-card" style="width:auto;padding:12px 24px;border-radius:18px;font-weight:800">
+            回到單元一複習
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Knowledge Modal -->
+  <div id="knowledge-modal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-head">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="padding:6px;background:rgba(255,255,255,0.2);border-radius:10px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+          </div>
+          <div>
+            <h3 style="font-size:1.15rem;font-weight:800">體積生活小百科 📖</h3>
+            <p style="font-size:0.72rem;color:#fffbeb">國小四年級必備的空間魔法知識！</p>
+          </div>
+        </div>
+        <button id="btn-close-knowledge" style="color:#ffffff;padding:4px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="trivia-item" style="background:#fffbeb;border-color:#fde68a">
+          <div class="trivia-icon" style="background:#f59e0b"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div>
+          <div>
+            <h4 style="font-weight:800;color:#1e293b;font-size:0.95rem;margin-bottom:4px">1 立方公分（1 cm³）到底有多大？</h4>
+            <p style="font-size:0.82rem;color:#475569;line-height:1.5">
+              長 1 公分、寬 1 公分、高 1 公分的正方體，體積就是 <b style="color:#b45309">1 立方公分</b>。在生活中，常見的「小骰子🎲」、「一顆方糖🧂」或「大拇指第一節」，大小差不多都是 1 立方公分喔！
+            </p>
+          </div>
+        </div>
+
+        <div class="trivia-item" style="background:#eff6ff;border-color:#bfdbfe">
+          <div class="trivia-icon" style="background:#3b82f6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg></div>
+          <div>
+            <h4 style="font-weight:800;color:#1e293b;font-size:0.95rem;margin-bottom:4px">神奇等式：體積與毫升（mL）的秘密</h4>
+            <p style="font-size:0.82rem;color:#475569;line-height:1.5">
+              如果把 1 立方公分的小空盒子裝滿水，倒進量筒裡量一量，正好就是 <b style="color:#1d4ed8">1 毫升 (mL)</b>！
+            </p>
+            <div style="margin-top:6px;background:#ffffff;padding:6px 12px;border-radius:10px;font-size:0.75rem;font-weight:800;color:#1e40af;font-family:monospace;display:flex;justify-content:space-around">
+              <span>1 cm³ = 1 mL</span>
+              <span>·</span>
+              <span>1000 cm³ = 1 公升 (L)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="trivia-item" style="background:#ecfdf5;border-color:#a7f3d0">
+          <div class="trivia-icon" style="background:#10b981"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg></div>
+          <div>
+            <h4 style="font-weight:800;color:#1e293b;font-size:0.95rem;margin-bottom:4px">體積守恆：形狀變了，體積會變嗎？</h4>
+            <p style="font-size:0.82rem;color:#475569;line-height:1.5">
+              拿 12 塊一模一樣的積木，你可以排成「長蛇」、也可以堆成「樓梯」。形狀雖然完全不同，但因為積木數量都是 12 塊，所以他們的體積依然是 <b style="color:#047857">12 立方公分</b>，完全相等！這叫作「體積守恆」。
+            </p>
+          </div>
+        </div>
+
+        <div class="trivia-item" style="background:#faf5ff;border-color:#e9d5ff">
+          <div class="trivia-icon" style="background:#8b5cf6"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg></div>
+          <div>
+            <h4 style="font-weight:800;color:#1e293b;font-size:0.95rem;margin-bottom:4px">常見考題陷阱：體積 vs 表面積</h4>
+            <p style="font-size:0.82rem;color:#475569;line-height:1.5">
+              很多小朋友容易搞混喔！記住口訣：<br>
+              📦 <b style="color:#6b21a8">體積</b>：盒子肚子裡面能塞多少空間（單位是 cm³）。<br>
+              🎁 <b style="color:#6b21a8">表面積</b>：包裝紙要多大才能把外面全包起來（單位是 cm²）。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button id="btn-modal-ok" class="btn-go-next" style="width:auto;padding:10px 24px;min-height:42px">
+          我學會了！開始探索 ✨
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Particle Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Footer -->
+  <footer>
+    <div style="font-weight:800;color:#334155;margin-bottom:4px">🌟 神奇體積小方塊 · 國小四年級數學互動學習樂園</div>
+    <div>依據國小四年級數學「體積」課綱核心概念設計 · 支援 3D 自由旋轉、分層展開、X光透視與生活小百科</div>
+  </footer>
+
+  <script>
+
+// Embedded SVGs - no external fonts or CDN icons needed
+const ICONS = {
+  box: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`,
+  layers: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>`,
+  eye: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+  puzzle: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.439 7.85c0-1.57.8-2.35 2.56-2.85-2-5-6-5-8-2-.5 1-1.5 1-2 0-2-3-6-3-8 2 1.76.5 2.56 1.28 2.56 2.85 0 1.57-.8 2.35-2.56 2.85 2 5 6 5 8 2 .5-1 1.5-1 2 0 2 3 6 3 8-2-1.76-.5-2.56-1.28-2.56-2.85z"></path></svg>`,
+  hammer: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9"></path><path d="M17.64 15 22 10.64"></path><path d="m20.91 3.26-1.57-1.57a1.5 1.5 0 0 0-2.12 0l-3.3 3.3a1.5 1.5 0 0 0 0 2.12l1.57 1.57"></path></svg>`,
+  trophy: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>`,
+  volume: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`,
+  volumeX: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`,
+  book: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`,
+  sparkles: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>`,
+  check: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+  arrowRight: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`,
+  zoomIn: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>`,
+  zoomOut: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>`,
+  rotateCcw: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>`,
+  grid: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`,
+  plus: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`,
+  trash: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
+  help: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+  close: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
+  droplet: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`,
+  lightbulb: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>`
+};
+
+
+// Web Audio Synthesizer & Speech Synthesis
+let audioCtx = null;
+let soundEnabled = true;
+
+function getAudioContext() {
+  if (!soundEnabled) return null;
+  try {
+    if (!audioCtx) {
+      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtxClass) audioCtx = new AudioCtxClass();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  } catch (e) {
+    return null;
+  }
+}
+
+function playBlockAddSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const now = ctx.currentTime;
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(440, now);
+    osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.1);
+  } catch(e) {}
+}
+
+function playBlockRemoveSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const now = ctx.currentTime;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(220, now + 0.1);
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.12);
+  } catch(e) {}
+}
+
+function playSuccessSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const now = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const noteTime = now + idx * 0.09;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, noteTime);
+      gain.gain.setValueAtTime(0.2, noteTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(noteTime);
+      osc.stop(noteTime + 0.25);
+    });
+  } catch(e) {}
+}
+
+function playIncorrectSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(260, now);
+    osc.frequency.setValueAtTime(220, now + 0.12);
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.25);
+  } catch(e) {}
+}
+
+function playClickSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const now = ctx.currentTime;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(700, now);
+    gain.gain.setValueAtTime(0.06, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.04);
+  } catch(e) {}
+}
+
+// Text to Speech
+let currentUtterance = null;
+function speakText(text, onStart, onEnd) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    onEnd && onEnd();
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const clean = text.replace(/[*#_`]/g, '').replace(/\bcm³\b/gi, '立方公分');
+  const utterance = new SpeechSynthesisUtterance(clean);
+  utterance.rate = 0.95;
+  utterance.pitch = 1.1;
+
+  const voices = window.speechSynthesis.getVoices();
+  const twVoice = voices.find(v => v.lang === 'zh-TW' || v.lang.includes('TW') || v.name.includes('Yating') || v.name.includes('Hanhan') || v.name.includes('Mei-Jia'));
+  const zhVoice = voices.find(v => v.lang.startsWith('zh'));
+  if (twVoice) utterance.voice = twVoice;
+  else if (zhVoice) utterance.voice = zhVoice;
+  else utterance.lang = 'zh-TW';
+
+  utterance.onstart = () => { onStart && onStart(); };
+  utterance.onend = () => { onEnd && onEnd(); };
+  utterance.onerror = () => { onEnd && onEnd(); };
+
+  currentUtterance = utterance;
+  window.speechSynthesis.speak(utterance);
+}
+
+function stopSpeaking() {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    currentUtterance = null;
+  }
+}
+
+
+// Native Canvas Confetti Particle Burst
+function launchConfetti(count = 70) {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+
+  const colors = ['#f59e0b', '#ec4899', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444', '#06b6d4'];
+  const particles = [];
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: width * 0.5 + (Math.random() - 0.5) * 80,
+      y: height * 0.65,
+      vx: (Math.random() - 0.5) * 16,
+      vy: -(Math.random() * 12 + 10),
+      size: Math.random() * 8 + 5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360,
+      vRot: (Math.random() - 0.5) * 10,
+      opacity: 1
+    });
+  }
+
+  let animFrameId = null;
+  function update() {
+    ctx.clearRect(0, 0, width, height);
+    let activeCount = 0;
+
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.45; // gravity
+      p.vx *= 0.98; // air drag
+      p.rotation += p.vRot;
+      p.opacity -= 0.009;
+
+      if (p.opacity > 0 && p.y < height + 50) {
+        activeCount++;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        ctx.restore();
+      }
+    });
+
+    if (activeCount > 0) {
+      animFrameId = requestAnimationFrame(update);
+    } else {
+      ctx.clearRect(0, 0, width, height);
+    }
+  }
+
+  update();
+}
+
+
+// 3D Canvas Engine using 2D Canvas Projection & Painter's Algorithm
+
+const UNIT_VERTICES = [
+  [-0.5, -0.5, -0.5], // 0: LBB
+  [ 0.5, -0.5, -0.5], // 1: RBB
+  [ 0.5,  0.5, -0.5], // 2: RTB
+  [-0.5,  0.5, -0.5], // 3: LTB
+  [-0.5, -0.5,  0.5], // 4: LBF
+  [ 0.5, -0.5,  0.5], // 5: RBF
+  [ 0.5,  0.5,  0.5], // 6: RTF
+  [-0.5,  0.5,  0.5], // 7: LTF
+];
+
+const FACES = [
+  { name: 'top', indices: [3, 2, 6, 7], normal: [0, 1, 0], shadeFactor: 1.15 },
+  { name: 'bottom', indices: [0, 1, 5, 4], normal: [0, -1, 0], shadeFactor: 0.5 },
+  { name: 'front', indices: [4, 5, 6, 7], normal: [0, 0, 1], shadeFactor: 0.95 },
+  { name: 'back', indices: [1, 0, 3, 2], normal: [0, 0, -1], shadeFactor: 0.7 },
+  { name: 'right', indices: [5, 1, 2, 6], normal: [1, 0, 0], shadeFactor: 0.8 },
+  { name: 'left', indices: [0, 4, 7, 3], normal: [-1, 0, 0], shadeFactor: 0.88 },
+];
+
+const LAYER_COLORS = [
+  '#3b82f6', // blue
+  '#10b981', // emerald
+  '#f59e0b', // amber
+  '#ec4899', // pink
+  '#8b5cf6', // purple
+  '#06b6d4', // cyan
+  '#f97316', // orange
+  '#14b8a6', // teal
+];
+
+function adjustColor(hex, factor) {
+  if (!hex || hex[0] !== '#') return hex || '#3b82f6';
+  const num = parseInt(hex.slice(1), 16);
+  if (isNaN(num)) return hex;
+  let r = (num >> 16) & 255;
+  let g = (num >> 8) & 255;
+  let b = num & 255;
+  r = Math.min(255, Math.max(0, Math.round(r * factor)));
+  g = Math.min(255, Math.max(0, Math.round(g * factor)));
+  b = Math.min(255, Math.max(0, Math.round(b * factor)));
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function hexToRgba(hex, alpha) {
+  if (!hex || hex[0] !== '#') return `rgba(59, 130, 246, ${alpha})`;
+  const num = parseInt(hex.slice(1), 16);
+  if (isNaN(num)) return `rgba(59, 130, 246, ${alpha})`;
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function isPointInPolygon(px, py, polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i][0], yi = polygon[i][1];
+    const xj = polygon[j][0], yj = polygon[j][1];
+    const intersect = ((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+class BlockRenderer3D {
+  constructor(containerEl, options = {}) {
+    this.container = containerEl;
+    this.canvas = containerEl.querySelector('canvas');
+    this.ctx = this.canvas.getContext('2d');
+
+    this.blocks = options.blocks || [];
+    this.showDimensions = options.showDimensions || false;
+    this.dimensionValues = options.dimensionValues || null;
+    this.colorMode = options.colorMode || 'layer';
+    this.showLabels = options.showLabels || false;
+    this.gridSize = options.gridSize || { x: 5, z: 5 };
+    this.allowLayerExplode = options.allowLayerExplode !== false;
+    this.allowXRay = options.allowXRay !== false;
+    this.emptyText = options.emptyText || '在此建造積木';
+
+    this.rotX = options.defaultRotX !== undefined ? options.defaultRotX : 35 * (Math.PI / 180);
+    this.rotY = options.defaultRotY !== undefined ? options.defaultRotY : 45 * (Math.PI / 180);
+    this.defaultRotX = this.rotX;
+    this.defaultRotY = this.rotY;
+
+    this.zoom = 1;
+    this.explodeGap = 0;
+    this.isXRay = !!options.initialXRay;
+    this.showGrid = true;
+
+    this.isDragging = false;
+    this.lastPos = { x: 0, y: 0 };
+    this.clickableFaces = [];
+    this.gridCells = [];
+
+    this.onBlockClick = options.onBlockClick || null;
+    this.onEmptyGridClick = options.onEmptyGridClick || null;
+
+    this.initEvents();
+  }
+
+  setBlocks(blocks) {
+    this.blocks = blocks;
+    this.draw();
+  }
+
+  setOptions(newOpts) {
+    if (newOpts.blocks !== undefined) this.blocks = newOpts.blocks;
+    if (newOpts.showDimensions !== undefined) this.showDimensions = newOpts.showDimensions;
+    if (newOpts.dimensionValues !== undefined) this.dimensionValues = newOpts.dimensionValues;
+    if (newOpts.colorMode !== undefined) this.colorMode = newOpts.colorMode;
+    if (newOpts.showLabels !== undefined) this.showLabels = newOpts.showLabels;
+    if (newOpts.gridSize !== undefined) this.gridSize = newOpts.gridSize;
+    if (newOpts.isXRay !== undefined) this.isXRay = newOpts.isXRay;
+    if (newOpts.explodeGap !== undefined) this.explodeGap = newOpts.explodeGap;
+    this.draw();
+  }
+
+  initEvents() {
+    // ResizeObserver on the container element
+    this.resize = () => {
+      const rect = this.container.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return;
+      const dpr = window.devicePixelRatio || 1;
+      this.canvas.width = Math.round(rect.width * dpr);
+      this.canvas.height = Math.round(rect.height * dpr);
+      this.canvas.style.width = `${rect.width}px`;
+      this.canvas.style.height = `${rect.height}px`;
+      if (this.ctx) this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      this.draw();
+    };
+
+    this.ro = new ResizeObserver(this.resize);
+    this.ro.observe(this.container);
+
+    this.resize();
+    requestAnimationFrame(this.resize);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(this.resize);
+    }
+    this.onVisible = () => { if (!document.hidden) this.resize(); };
+    document.addEventListener('visibilitychange', this.onVisible);
+
+    // Pointer Drag Rotation
+    this.canvas.addEventListener('pointerdown', (e) => {
+      this.isDragging = true;
+      this.lastPos = { x: e.clientX, y: e.clientY };
+      try { this.canvas.setPointerCapture(e.pointerId); } catch(err) {}
+    });
+
+    this.canvas.addEventListener('pointermove', (e) => {
+      if (!this.isDragging) return;
+      const dx = e.clientX - this.lastPos.x;
+      const dy = e.clientY - this.lastPos.y;
+      this.lastPos = { x: e.clientX, y: e.clientY };
+
+      this.rotY += dx * 0.012;
+      const nextX = this.rotX - dy * 0.012;
+      this.rotX = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, nextX));
+      this.draw();
+    });
+
+    const stopDrag = (e) => {
+      if (this.isDragging) {
+        this.isDragging = false;
+        try { this.canvas.releasePointerCapture(e.pointerId); } catch(err) {}
+      }
+    };
+    this.canvas.addEventListener('pointerup', stopDrag);
+    this.canvas.addEventListener('pointercancel', stopDrag);
+
+    // Wheel Zoom
+    this.canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      this.zoom = Math.max(0.6, Math.min(2.3, this.zoom - e.deltaY * 0.001));
+      this.draw();
+    }, { passive: false });
+
+    // Click on block or ground grid
+    this.canvas.addEventListener('click', (e) => {
+      const rect = this.canvas.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+
+      // Check blocks in reverse depth order
+      for (let i = this.clickableFaces.length - 1; i >= 0; i--) {
+        if (isPointInPolygon(px, py, this.clickableFaces[i].polygon)) {
+          if (this.onBlockClick) {
+            this.onBlockClick(this.clickableFaces[i].block, this.clickableFaces[i].faceName, e);
+          }
+          return;
+        }
+      }
+
+      // Check empty grid
+      if (this.onEmptyGridClick) {
+        for (let i = 0; i < this.gridCells.length; i++) {
+          if (isPointInPolygon(px, py, this.gridCells[i].polygon)) {
+            this.onEmptyGridClick(this.gridCells[i].x, this.gridCells[i].z);
+            return;
+          }
+        }
+      }
+    });
+  }
+
+  draw() {
+    if (!this.ctx || !this.canvas) return;
+    const rect = this.container.getBoundingClientRect();
+    const width = rect.width >= 1 ? rect.width : (this.canvas.clientWidth || 400);
+    const height = rect.height >= 1 ? rect.height : (this.canvas.clientHeight || 340);
+    if (width < 1 || height < 1) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Compute model bounds
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    let minZ = Infinity, maxZ = -Infinity;
+
+    if (this.blocks.length === 0) {
+      const gX = this.gridSize ? this.gridSize.x : 4;
+      const gZ = this.gridSize ? this.gridSize.z : 4;
+      minX = 0; maxX = gX - 1; minY = 0; maxY = 0; minZ = 0; maxZ = gZ - 1;
+    } else {
+      this.blocks.forEach(b => {
+        if (b.x < minX) minX = b.x;
+        if (b.x > maxX) maxX = b.x;
+        if (b.y < minY) minY = b.y;
+        if (b.y > maxY) maxY = b.y;
+        if (b.z < minZ) minZ = b.z;
+        if (b.z > maxZ) maxZ = b.z;
+      });
+    }
+
+    const sizeX = Math.max(1, maxX - minX + 1);
+    const sizeY = Math.max(1, maxY - minY + 1);
+    const sizeZ = Math.max(1, maxZ - minZ + 1);
+
+    const effGridX = this.gridSize ? this.gridSize.x : Math.max(sizeX, 4);
+    const effGridZ = this.gridSize ? this.gridSize.z : Math.max(sizeZ, 4);
+    const centerX = effGridX / 2 - 0.5;
+    const centerY = (maxY - minY) / 2;
+    const centerZ = effGridZ / 2 - 0.5;
+
+    const maxDim = Math.max(sizeX, sizeZ, (sizeY + maxY * this.explodeGap) * 1.2, 5);
+    const baseScale = Math.min(width, height) / (maxDim * 2.3) * this.zoom;
+
+    const cosY = Math.cos(this.rotY);
+    const sinY = Math.sin(this.rotY);
+    const cosX = Math.cos(this.rotX);
+    const sinX = Math.sin(this.rotX);
+
+    const projectPoint = (x, y, z) => {
+      const dx = x - centerX;
+      const dy = y - centerY;
+      const dz = z - centerZ;
+
+      const x1 = dx * cosY + dz * sinY;
+      const z1 = -dx * sinY + dz * cosY;
+      const y1 = dy;
+
+      const y2 = y1 * cosX - z1 * sinX;
+      const z2 = y1 * sinX + z1 * cosX;
+      const x2 = x1;
+
+      return {
+        sx: width / 2 + x2 * baseScale,
+        sy: height / 2 - y2 * baseScale,
+        depth: z2
+      };
+    };
+
+    this.clickableFaces = [];
+    this.gridCells = [];
+
+    // Ground Grid
+    if (this.showGrid) {
+      for (let gx = 0; gx < effGridX; gx++) {
+        for (let gz = 0; gz < effGridZ; gz++) {
+          const p1 = projectPoint(gx - 0.5, -0.5, gz - 0.5);
+          const p2 = projectPoint(gx + 0.5, -0.5, gz - 0.5);
+          const p3 = projectPoint(gx + 0.5, -0.5, gz + 0.5);
+          const p4 = projectPoint(gx - 0.5, -0.5, gz + 0.5);
+
+          this.gridCells.push({ x: gx, z: gz, polygon: [[p1.sx, p1.sy], [p2.sx, p2.sy], [p3.sx, p3.sy], [p4.sx, p4.sy]] });
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(p1.sx, p1.sy);
+          this.ctx.lineTo(p2.sx, p2.sy);
+          this.ctx.lineTo(p3.sx, p3.sy);
+          this.ctx.lineTo(p4.sx, p4.sy);
+          this.ctx.closePath();
+          this.ctx.fillStyle = (gx + gz) % 2 === 0 ? 'rgba(241, 245, 249, 0.75)' : 'rgba(226, 232, 240, 0.85)';
+          this.ctx.fill();
+          this.ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+          this.ctx.lineWidth = 1;
+          this.ctx.stroke();
+        }
+      }
+    }
+
+    // Prepare faces
+    const renderFaces = [];
+    this.blocks.forEach(block => {
+      const effectiveY = block.y + block.y * this.explodeGap;
+
+      let baseColor = block.color;
+      if (!baseColor) {
+        if (this.colorMode === 'layer') {
+          baseColor = LAYER_COLORS[block.y % LAYER_COLORS.length];
+        } else if (this.colorMode === 'split' && block.group) {
+          baseColor = block.group === 'A' ? '#3b82f6' : '#ec4899';
+        } else {
+          baseColor = '#3b82f6';
+        }
+      }
+
+      const isGhost = !!block.ghost;
+      const isHighlighted = !!block.highlighted;
+
+      const v3d = UNIT_VERTICES.map(([vx, vy, vz]) => {
+        return projectPoint(block.x + vx, effectiveY + vy, block.z + vz);
+      });
+
+      FACES.forEach(faceDef => {
+        const [nx, ny, nz] = faceDef.normal;
+        const nx1 = nx * cosY + nz * sinY;
+        const nz1 = -nx * sinY + nz * cosY;
+        const ny1 = ny;
+        const ny2 = ny1 * cosX - nz1 * sinX;
+        const nz2 = ny1 * sinX + nz1 * cosX;
+
+        // Back-face culling if not X-Ray
+        if (nz2 <= 0 && !this.isXRay) return;
+
+        const facePts = faceDef.indices.map(idx => v3d[idx]);
+        const avgDepth = facePts.reduce((acc, p) => acc + p.depth, 0) / 4;
+        const polygon = facePts.map(p => [p.sx, p.sy]);
+        const centerSx = facePts.reduce((acc, p) => acc + p.sx, 0) / 4;
+        const centerSy = facePts.reduce((acc, p) => acc + p.sy, 0) / 4;
+
+        let fill = adjustColor(baseColor, faceDef.shadeFactor);
+        let stroke = adjustColor(baseColor, 0.6);
+
+        if (isGhost) {
+          fill = 'rgba(226, 232, 240, 0.25)';
+          stroke = 'rgba(100, 116, 139, 0.8)';
+        } else if (this.isXRay) {
+          const alpha = isHighlighted ? 0.85 : 0.38;
+          fill = hexToRgba(baseColor, alpha);
+          stroke = isHighlighted ? '#f59e0b' : hexToRgba(adjustColor(baseColor, 0.4), 0.8);
+        } else if (isHighlighted) {
+          fill = adjustColor('#fbbf24', faceDef.shadeFactor);
+          stroke = '#b45309';
+        }
+
+        renderFaces.push({
+          block,
+          faceName: faceDef.name,
+          points: facePts,
+          polygon,
+          depth: avgDepth,
+          fillColor: fill,
+          strokeColor: stroke,
+          isHighlighted,
+          isGhost,
+          centerScreen: { sx: centerSx, sy: centerSy }
+        });
+      });
+    });
+
+    renderFaces.sort((a, b) => a.depth - b.depth);
+
+    renderFaces.forEach(f => {
+      this.ctx.beginPath();
+      this.ctx.moveTo(f.points[0].sx, f.points[0].sy);
+      for (let i = 1; i < f.points.length; i++) {
+        this.ctx.lineTo(f.points[i].sx, f.points[i].sy);
+      }
+      this.ctx.closePath();
+
+      this.ctx.fillStyle = f.fillColor;
+      this.ctx.fill();
+
+      this.ctx.strokeStyle = f.strokeColor;
+      this.ctx.lineWidth = f.isHighlighted ? 2.5 : 1.5;
+      if (f.isGhost) this.ctx.setLineDash([4, 3]);
+      else this.ctx.setLineDash([]);
+      this.ctx.stroke();
+      this.ctx.setLineDash([]);
+
+      if (this.showLabels && f.block.label !== undefined && (f.faceName === 'top' || f.faceName === 'front')) {
+        this.ctx.font = 'bold 12px "Noto Sans TC", sans-serif';
+        this.ctx.fillStyle = f.isHighlighted ? '#78350f' : '#ffffff';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(String(f.block.label), f.centerScreen.sx, f.centerScreen.sy);
+      }
+
+      this.clickableFaces.push({
+        block: f.block,
+        faceName: f.faceName,
+        polygon: f.polygon,
+        depth: f.depth
+      });
+    });
+
+    // Dimensions labels
+    if (this.showDimensions && this.blocks.length > 0) {
+      const lenVal = this.dimensionValues?.length ?? sizeX;
+      const widVal = this.dimensionValues?.width ?? sizeZ;
+      const heiVal = this.dimensionValues?.height ?? sizeY;
+
+      const drawDim = (text, x, y, z, color) => {
+        const pt = projectPoint(x, y, z);
+        this.ctx.save();
+        this.ctx.font = '700 13px "Noto Sans TC", sans-serif';
+        const metrics = this.ctx.measureText(text);
+        const boxW = metrics.width + 16;
+        const boxH = 22;
+
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = 1.5;
+        this.ctx.beginPath();
+        if (this.ctx.roundRect) {
+          this.ctx.roundRect(pt.sx - boxW / 2, pt.sy - boxH / 2, boxW, boxH, 6);
+        } else {
+          this.ctx.rect(pt.sx - boxW / 2, pt.sy - boxH / 2, boxW, boxH);
+        }
+        this.ctx.fill();
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = color;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(text, pt.sx, pt.sy);
+        this.ctx.restore();
+      };
+
+      const midX = (minX + maxX) / 2;
+      drawDim(`長 ${lenVal} cm`, midX, -0.5, maxZ + 0.8, '#2563eb');
+      const midZ = (minZ + maxZ) / 2;
+      drawDim(`寬 ${widVal} cm`, maxX + 0.8, -0.5, midZ, '#059669');
+      const midY = (minY + maxY) / 2;
+      drawDim(`高 ${heiVal} cm`, minX - 0.8, midY, minZ - 0.5, '#d97706');
+    }
+
+    if (this.blocks.length === 0) {
+      this.ctx.save();
+      this.ctx.font = '500 14px "Noto Sans TC", sans-serif';
+      this.ctx.fillStyle = '#94a3b8';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText(this.emptyText, width / 2, height / 2);
+      this.ctx.restore();
+    }
+  }
+
+  setPreset(type) {
+    switch (type) {
+      case 'iso':
+        this.rotX = 35 * (Math.PI / 180);
+        this.rotY = 45 * (Math.PI / 180);
+        break;
+      case 'top':
+        this.rotX = 84 * (Math.PI / 180);
+        this.rotY = 0;
+        break;
+      case 'front':
+        this.rotX = 0.1;
+        this.rotY = 0;
+        break;
+      case 'side':
+        this.rotX = 0.1;
+        this.rotY = Math.PI / 2;
+        break;
+    }
+    this.draw();
+  }
+
+  resetView() {
+    this.rotX = this.defaultRotX;
+    this.rotY = this.defaultRotY;
+    this.zoom = 1;
+    this.explodeGap = 0;
+    this.draw();
+  }
+}
+
+
+// 10 國小四年級核心體積試題
+const QUIZ_QUESTIONS = [
+  {
+    id: 1,
+    title: '第 1 關：基礎積木數數看',
+    badge: '基礎暖身',
+    questionText: '請觀察 3D 形體，每個小積木是 1 立方公分，這個形體的體積是多少立方公分？',
+    blocks: [
+      { id: 'q1-1', x: 0, y: 0, z: 0, color: '#3b82f6', label: 1 },
+      { id: 'q1-2', x: 1, y: 0, z: 0, color: '#3b82f6', label: 2 },
+      { id: 'q1-3', x: 2, y: 0, z: 0, color: '#3b82f6', label: 3 },
+      { id: 'q1-4', x: 0, y: 0, z: 1, color: '#3b82f6', label: 4 },
+      { id: 'q1-5', x: 1, y: 0, z: 1, color: '#3b82f6', label: 5 },
+      { id: 'q1-6', x: 0, y: 1, z: 0, color: '#ec4899', label: 6 },
+      { id: 'q1-7', x: 1, y: 1, z: 0, color: '#ec4899', label: 7 },
+    ],
+    correctAnswer: 7,
+    unit: '立方公分',
+    options: [5, 6, 7, 8],
+    hint: '底層有 5 塊，上面第 2 層有 2 塊，加起來共有幾塊呢？',
+    explanation: '底層有 5 塊積木，第二層有 2 塊積木，5 + 2 = 7 個小積木。每個小積木是 1 立方公分，所以總體積是 7 立方公分！',
+    formulaStep: '5 (底層) + 2 (上層) = 7 立方公分',
+  },
+  {
+    id: 2,
+    title: '第 2 關：長方體魔法公式',
+    badge: '公式計算',
+    questionText: '這個長方體長 4 公分、寬 3 公分、高 2 公分，請算出它的體積是多少？',
+    blocks: (() => {
+      const b = [];
+      for (let y = 0; y < 2; y++) {
+        for (let z = 0; z < 3; z++) {
+          for (let x = 0; x < 4; x++) {
+            b.push({ id: `q2-${x}-${y}-${z}`, x, y, z, color: y === 0 ? '#3b82f6' : '#10b981' });
+          }
+        }
+      }
+      return b;
+    })(),
+    correctAnswer: 24,
+    unit: '立方公分',
+    options: [18, 20, 24, 28],
+    hint: '長方體體積公式：長 × 寬 × 高。一層有 4 × 3 = 12 個，堆了 2 層！',
+    explanation: '長方體的體積 = 長 × 寬 × 高 = 4 × 3 × 2 = 24 立方公分！',
+    formulaStep: '4 × 3 × 2 = 24 立方公分',
+  },
+  {
+    id: 3,
+    title: '第 3 關：正方體的體積',
+    badge: '公式計算',
+    questionText: '邊長 3 公分的正方體，它的體積是多少立方公分？',
+    blocks: (() => {
+      const b = [];
+      for (let y = 0; y < 3; y++) {
+        for (let z = 0; z < 3; z++) {
+          for (let x = 0; x < 3; x++) {
+            b.push({ id: `q3-${x}-${y}-${z}`, x, y, z });
+          }
+        }
+      }
+      return b;
+    })(),
+    correctAnswer: 27,
+    unit: '立方公分',
+    options: [9, 18, 24, 27],
+    hint: '正方體每個邊都一樣長，體積公式是：邊長 × 邊長 × 邊長！',
+    explanation: '正方體的體積 = 邊長 × 邊長 × 邊長 = 3 × 3 × 3 = 27 立方公分！注意不是 3 × 3 喔！',
+    formulaStep: '3 × 3 × 3 = 27 立方公分',
+  },
+  {
+    id: 4,
+    title: '第 4 關：小心隱藏積木！',
+    badge: '空間盲區',
+    questionText: '觀察這個階梯造型，別被正面的外觀騙了！請問全部總共有多少立方公分？',
+    blocks: (() => {
+      const b = [];
+      for (let x = 0; x < 3; x++) {
+        for (let z = 0; z < 2; z++) {
+          b.push({ id: `q4-0-${x}-${z}`, x, y: 0, z, color: '#3b82f6' });
+        }
+      }
+      for (let x = 0; x < 2; x++) {
+        for (let z = 0; z < 2; z++) {
+          b.push({ id: `q4-1-${x}-${z}`, x, y: 1, z, color: '#10b981' });
+        }
+      }
+      for (let z = 0; z < 2; z++) {
+        b.push({ id: `q4-2-0-${z}`, x: 0, y: 2, z, color: '#ec4899' });
+      }
+      return b;
+    })(),
+    correctAnswer: 12,
+    unit: '立方公分',
+    options: [9, 10, 11, 12],
+    hint: '你可以拖曳旋轉 3D 視角，或用「分層法」來算：第 1 層有 6 塊、第 2 層有 4 塊、第 3 層有 2 塊！',
+    explanation: '最高的那兩塊積木下方，藏著看不見的底層積木在支撐！分層計算：第1層有6個 + 第2層有4個 + 第3層有2個 = 12 立方公分！',
+    formulaStep: '6 (第1層) + 4 (第2層) + 2 (第3層) = 12 立方公分',
+  },
+  {
+    id: 5,
+    title: '第 5 關：複合形體 L 型柱',
+    badge: '切割法解題',
+    questionText: '這是一個 L 型複合長方體，運用切割法或補齊法，它的體積是多少？',
+    blocks: (() => {
+      const b = [];
+      for (let x = 0; x < 2; x++) {
+        for (let y = 0; y < 3; y++) {
+          b.push({ id: `q5-p-${x}-${y}`, x, y, z: 0, color: '#3b82f6' });
+        }
+      }
+      for (let x = 2; x < 4; x++) {
+        b.push({ id: `q5-f-${x}`, x, y: 0, z: 0, color: '#ec4899' });
+      }
+      return b;
+    })(),
+    correctAnswer: 8,
+    unit: '立方公分',
+    options: [6, 7, 8, 10],
+    hint: '由左往右直切：左邊立柱有 2 × 3 = 6 塊，右邊底座有 2 塊，合起來是多少呢？',
+    explanation: '利用切割法：左邊長方體 2 × 1 × 3 = 6 立方公分，右邊長方體 2 × 1 × 1 = 2 立方公分。6 + 2 = 8 立方公分！',
+    formulaStep: '6 (左柱) + 2 (右座) = 8 立方公分',
+  },
+  {
+    id: 6,
+    title: '第 6 關：大長方體體積探險',
+    badge: '公式計算',
+    questionText: '一個長 5 公分、寬 4 公分、高 3 公分的禮盒，體積是多少立方公分？',
+    blocks: (() => {
+      const b = [];
+      for (let y = 0; y < 3; y++) {
+        for (let z = 0; z < 4; z++) {
+          for (let x = 0; x < 5; x++) {
+            b.push({ id: `q6-${x}-${y}-${z}`, x, y, z });
+          }
+        }
+      }
+      return b;
+    })(),
+    correctAnswer: 60,
+    unit: '立方公分',
+    options: [45, 50, 60, 75],
+    hint: '體積公式：長 × 寬 × 高 = 5 × 4 × 3',
+    explanation: '底層面積是 5 × 4 = 20，再乘上高 3 層：20 × 3 = 60 立方公分！',
+    formulaStep: '5 × 4 × 3 = 60 立方公分',
+  },
+  {
+    id: 7,
+    title: '第 7 關：凹字型拱門體積',
+    badge: '補齊法挑戰',
+    questionText: '這座拱門造型體積是多少？（提示：可用大長方體減去中間挖空的洞）',
+    blocks: (() => {
+      const b = [];
+      for (let x = 0; x < 3; x++) {
+        for (let y = 0; y < 3; y++) {
+          if (x === 1 && y >= 1) continue;
+          b.push({ id: `q7-${x}-${y}`, x, y, z: 0, color: '#8b5cf6' });
+        }
+      }
+      return b;
+    })(),
+    correctAnswer: 7,
+    unit: '立方公分',
+    options: [5, 6, 7, 9],
+    hint: '完整 3×3 是 9 塊，中間挖掉了 2 塊，剩下幾塊呢？',
+    explanation: '完整的大正方形有 3 × 3 = 9 塊，中間挖空了 2 塊積木，9 - 2 = 7 立方公分！',
+    formulaStep: '9 (完整) - 2 (挖空) = 7 立方公分',
+  },
+  {
+    id: 8,
+    title: '第 8 關：體積守恆神探',
+    badge: '概念思維',
+    questionText: '用 16 塊 1 立方公分的小積木，排成一條細長的長條，它的體積是多少？',
+    blocks: (() => {
+      const b = [];
+      for (let x = 0; x < 8; x++) {
+        b.push({ id: `q8-${x}-0`, x, y: 0, z: 0, color: '#f59e0b' });
+        b.push({ id: `q8-${x}-1`, x, y: 1, z: 0, color: '#f59e0b' });
+      }
+      return b;
+    })(),
+    correctAnswer: 16,
+    unit: '立方公分',
+    options: [8, 12, 16, 24],
+    hint: '體積守恆性：不管形狀排成怎樣，只要積木數量不變，體積就是積木的總數！',
+    explanation: '因為用了 16 塊 1 立方公分的積木，不論排成何種形狀，總體積始終是 16 立方公分！',
+    formulaStep: '1 cm³ × 16 塊 = 16 立方公分',
+  },
+  {
+    id: 9,
+    title: '第 9 關：透視中心隱藏柱',
+    badge: '空間盲區',
+    questionText: '外圈 3×3 底座被高高堆起，請仔細算算看這個實心立方體一共有多少立方公分？',
+    blocks: (() => {
+      const b = [];
+      for (let y = 0; y < 2; y++) {
+        for (let z = 0; z < 3; z++) {
+          for (let x = 0; x < 3; x++) {
+            b.push({ id: `q9-${x}-${y}-${z}`, x, y, z, color: y === 0 ? '#3b82f6' : '#ec4899' });
+          }
+        }
+      }
+      return b;
+    })(),
+    correctAnswer: 18,
+    unit: '立方公分',
+    options: [12, 15, 18, 20],
+    hint: '長 3、寬 3、高 2，利用長方體公式：長 × 寬 × 高！',
+    explanation: '長 3 公分 × 寬 3 公分 × 高 2 公分 = 18 立方公分。被包在中間的積木也要算進去喔！',
+    formulaStep: '3 × 3 × 2 = 18 立方公分',
+  },
+  {
+    id: 10,
+    title: '第 10 關：終極小學霸挑戰！',
+    badge: '全能大考驗',
+    questionText: '一個長 4、寬 3、高 3 的大長方體，如果在頂層拿掉 3 個積木，現在體積是多少？',
+    blocks: (() => {
+      const b = [];
+      for (let y = 0; y < 3; y++) {
+        for (let z = 0; z < 3; z++) {
+          for (let x = 0; x < 4; x++) {
+            if (y === 2 && x === 0) continue;
+            b.push({ id: `q10-${x}-${y}-${z}`, x, y, z });
+          }
+        }
+      }
+      return b;
+    })(),
+    correctAnswer: 33,
+    unit: '立方公分',
+    options: [30, 33, 36, 39],
+    hint: '先算原本大長方體的體積：4 × 3 × 3 = 36，再扣掉拿走的 3 塊！',
+    explanation: '原本完整體積是 4 × 3 × 3 = 36 立方公分。拿掉了 3 塊積木，所以剩下的體積是 36 - 3 = 33 立方公分！太厲害了！',
+    formulaStep: '36 (原本全部) - 3 (拿掉) = 33 立方公分',
+  },
+];
+
+
+// Interactive Logic for all 6 tabs
+
+let currentTab = 'concept';
+let quizScore = 0;
+let tabRenderers = {};
+
+function switchTab(tabId) {
+  playClickSound();
+  stopSpeaking();
+  currentTab = tabId;
+
+  // Update tabs UI
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabId);
+  });
+  document.querySelectorAll('.tab-pane').forEach(pane => {
+    pane.classList.toggle('active', pane.id === `tab-${tabId}`);
+  });
+
+  // Trigger resize and draw for the active tab's canvas
+  setTimeout(() => {
+    if (tabRenderers[tabId] && tabRenderers[tabId].resize) {
+      tabRenderers[tabId].resize();
+    }
+  }, 30);
+}
+
+// Global Sound Toggle
+function initSoundToggle() {
+  const btn = document.getElementById('btn-sound-toggle');
+  btn.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    btn.classList.toggle('sound-active', soundEnabled);
+    btn.innerHTML = soundEnabled ? ICONS.volume : ICONS.volumeX;
+    btn.title = soundEnabled ? '音效已開啟' : '音效已靜音';
+    if (soundEnabled) playClickSound();
+  });
+}
+
+// Knowledge Modal
+function initKnowledgeModal() {
+  const modal = document.getElementById('knowledge-modal');
+  const btnOpen = document.getElementById('btn-open-knowledge');
+  const btnClose = document.getElementById('btn-close-knowledge');
+  const btnOk = document.getElementById('btn-modal-ok');
+
+  const open = () => { playClickSound(); modal.classList.add('open'); };
+  const close = () => { playClickSound(); modal.classList.remove('open'); };
+
+  btnOpen.addEventListener('click', open);
+  btnClose.addEventListener('click', close);
+  btnOk.addEventListener('click', close);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) close();
+  });
+}
+
+// ---------------- TAB 1: 認識體積 ----------------
+function initTabConcept() {
+  const container = document.getElementById('canvas-concept');
+  let currentShape = 'single';
+
+  function getBlocks(shape) {
+    const list = [];
+    if (shape === 'single') {
+      list.push({ id: 'b-0', x: 0, y: 0, z: 0, color: '#3b82f6', label: '1' });
+    } else if (shape === 'line') {
+      for (let i = 0; i < 12; i++) {
+        list.push({ id: `b-${i}`, x: i, y: 0, z: 0, color: '#3b82f6', label: i + 1 });
+      }
+    } else if (shape === 'flat') {
+      let count = 1;
+      for (let x = 0; x < 4; x++) {
+        for (let z = 0; z < 3; z++) {
+          list.push({ id: `b-${x}-${z}`, x, y: 0, z, color: '#10b981', label: count++ });
+        }
+      }
+    } else if (shape === 'box') {
+      let count = 1;
+      for (let y = 0; y < 2; y++) {
+        for (let x = 0; x < 3; x++) {
+          for (let z = 0; z < 2; z++) {
+            list.push({ id: `b-${x}-${y}-${z}`, x, y, z, color: y === 0 ? '#3b82f6' : '#f59e0b', label: count++ });
+          }
+        }
+      }
+    } else if (shape === 'stairs') {
+      let count = 1;
+      for (let x = 0; x < 3; x++) {
+        for (let z = 0; z < 2; z++) {
+          list.push({ id: `b-0-${x}-${z}`, x, y: 0, z, color: '#ec4899', label: count++ });
+        }
+      }
+      for (let x = 0; x < 2; x++) {
+        for (let z = 0; z < 2; z++) {
+          list.push({ id: `b-1-${x}-${z}`, x, y: 1, z, color: '#8b5cf6', label: count++ });
+        }
+      }
+      for (let z = 0; z < 2; z++) {
+        list.push({ id: `b-2-0-${z}`, x: 0, y: 2, z, color: '#f59e0b', label: count++ });
+      }
+    }
+    return list;
+  }
+
+  const renderer = new BlockRenderer3D(container, {
+    blocks: getBlocks('single'),
+    showDimensions: true,
+    dimensionValues: { length: 1, width: 1, height: 1 },
+    showLabels: true,
+    colorMode: 'layer',
+    gridSize: { x: 6, z: 6 }
+  });
+  tabRenderers['concept'] = renderer;
+
+  // Preset Buttons
+  document.querySelectorAll('.btn-concept-shape').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playBlockAddSound();
+      currentShape = btn.dataset.shape;
+      document.querySelectorAll('.btn-concept-shape').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      const blocks = getBlocks(currentShape);
+      const isSingle = currentShape === 'single';
+      renderer.setOptions({
+        blocks,
+        showDimensions: isSingle,
+        dimensionValues: isSingle ? { length: 1, width: 1, height: 1 } : null,
+        showLabels: currentShape !== 'line',
+        gridSize: { x: currentShape === 'line' ? 14 : 6, z: 6 }
+      });
+
+      const count = blocks.length;
+      document.getElementById('concept-count-val').textContent = count;
+      document.getElementById('concept-result-val').textContent = count;
+      document.getElementById('concept-result-formula').textContent = `1 cm³ × ${count} 個 = ${count} cm³`;
+    });
+  });
+
+  // Reading button
+  const btnRead = document.getElementById('btn-read-concept');
+  let isReading = false;
+  btnRead.addEventListener('click', () => {
+    if (isReading) {
+      stopSpeaking();
+      isReading = false;
+      btnRead.classList.remove('reading');
+      btnRead.querySelector('span').textContent = '小老師語音導讀';
+    } else {
+      isReading = true;
+      btnRead.classList.add('reading');
+      btnRead.querySelector('span').textContent = '正在朗讀中...';
+      const text = currentShape === 'single'
+        ? '長1公分、寬1公分、高1公分的正方體，它所佔有的空間大小就是1立方公分。我們用立方公分作為測量體積的標準單位。'
+        : '看！這四種形體雖然外觀完全不一樣，但它們全部都是由12個1立方公分的小積木組合而成的。所以它們的體積都是12立方公分！這告訴我們：形狀改變，體積不會改變！';
+      speakText(text, null, () => {
+        isReading = false;
+        btnRead.classList.remove('reading');
+        btnRead.querySelector('span').textContent = '小老師語音導讀';
+      });
+    }
+  });
+
+  // Next tab
+  document.getElementById('btn-next-concept').addEventListener('click', () => switchTab('formula'));
+}
+
+// ---------------- TAB 2: 長寬高公式 ----------------
+function initTabFormula() {
+  const container = document.getElementById('canvas-formula');
+  let length = 4;
+  let width = 3;
+  let height = 2;
+  let isCube = false;
+  let activeStep = 3;
+
+  function generateBlocks() {
+    const list = [];
+    let count = 1;
+    for (let y = 0; y < height; y++) {
+      for (let z = 0; z < width; z++) {
+        for (let x = 0; x < length; x++) {
+          let hl = false;
+          if (activeStep === 1) hl = (y === 0 && z === 0);
+          else if (activeStep === 2) hl = (y === 0);
+          list.push({ id: `f-${x}-${y}-${z}`, x, y, z, label: count++, highlighted: hl });
+        }
+      }
+    }
+    return list;
+  }
+
+  const renderer = new BlockRenderer3D(container, {
+    blocks: generateBlocks(),
+    showDimensions: true,
+    dimensionValues: { length, width, height },
+    colorMode: 'layer',
+    gridSize: { x: 7, z: 6 }
+  });
+  tabRenderers['formula'] = renderer;
+
+  function update() {
+    const blocks = generateBlocks();
+    renderer.setOptions({
+      blocks,
+      dimensionValues: { length, width, height },
+      gridSize: { x: Math.max(6, length + 2), z: Math.max(6, width + 2) }
+    });
+
+    const baseArea = length * width;
+    const total = length * width * height;
+
+    document.getElementById('f-val-len').textContent = `${length} cm`;
+    document.getElementById('f-val-wid').textContent = `${width} cm`;
+    document.getElementById('f-val-hei').textContent = `${height} cm`;
+
+    document.getElementById('formula-calc-len').textContent = length;
+    document.getElementById('formula-calc-wid').textContent = width;
+    document.getElementById('formula-calc-hei').textContent = height;
+    document.getElementById('formula-calc-total').textContent = total;
+
+    document.getElementById('formula-step-info').textContent = `每層有 ${baseArea} 塊 × 堆了 ${height} 層`;
+    document.getElementById('f-explain-len').textContent = length;
+    document.getElementById('f-explain-wid').textContent = width;
+    document.getElementById('f-explain-base').textContent = `${length} × ${width} = ${baseArea}`;
+    document.getElementById('f-explain-hei').textContent = height;
+    document.getElementById('f-explain-total').textContent = `${baseArea} × ${height} = ${total}`;
+  }
+
+  // Sliders
+  const sLen = document.getElementById('slider-len');
+  const sWid = document.getElementById('slider-wid');
+  const sHei = document.getElementById('slider-hei');
+
+  sLen.addEventListener('input', (e) => {
+    playBlockAddSound();
+    length = parseInt(e.target.value);
+    if (isCube) {
+      width = length;
+      height = length;
+      sWid.value = width;
+      sHei.value = height;
+    }
+    update();
+  });
+
+  sWid.addEventListener('input', (e) => {
+    playBlockAddSound();
+    width = parseInt(e.target.value);
+    update();
+  });
+
+  sHei.addEventListener('input', (e) => {
+    playBlockAddSound();
+    height = parseInt(e.target.value);
+    update();
+  });
+
+  // Cube Toggle
+  const btnCube = document.getElementById('btn-toggle-cube');
+  btnCube.addEventListener('click', () => {
+    playClickSound();
+    isCube = !isCube;
+    btnCube.classList.toggle('active-preset', isCube);
+    btnCube.textContent = isCube ? '已鎖定為正方體' : '切換為正方體';
+    document.getElementById('container-slider-wid').style.display = isCube ? 'none' : 'block';
+    document.getElementById('container-slider-hei').style.display = isCube ? 'none' : 'block';
+    document.getElementById('slider-len-title').textContent = isCube ? '正方體邊長' : '長（Length）';
+    if (isCube) {
+      width = length;
+      height = length;
+    }
+    update();
+  });
+
+  // Step buttons
+  document.querySelectorAll('.btn-formula-step').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playClickSound();
+      activeStep = parseInt(btn.dataset.step);
+      document.querySelectorAll('.btn-formula-step').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      update();
+    });
+  });
+
+  // Reading button
+  const btnRead = document.getElementById('btn-read-formula');
+  let isReading = false;
+  btnRead.addEventListener('click', () => {
+    if (isReading) {
+      stopSpeaking();
+      isReading = false;
+      btnRead.classList.remove('reading');
+      btnRead.querySelector('span').textContent = '語音聽解說';
+    } else {
+      isReading = true;
+      btnRead.classList.add('reading');
+      btnRead.querySelector('span').textContent = '正在解說...';
+      const total = length * width * height;
+      const text = isCube
+        ? `正方體的體積公式是：邊長乘以邊長乘以邊長。邊長是${length}公分，所以體積是：${length}乘${length}乘${length}，等於${total}立方公分！`
+        : `長方體的體積公式是：長乘以寬乘以高。長${length}公分，寬${width}公分，高${height}公分。體積就是：${length}乘${width}乘${height}，等於${total}立方公分！`;
+      speakText(text, null, () => {
+        isReading = false;
+        btnRead.classList.remove('reading');
+        btnRead.querySelector('span').textContent = '語音聽解說';
+      });
+    }
+  });
+
+  // Next tab
+  document.getElementById('btn-next-formula').addEventListener('click', () => switchTab('hidden'));
+}
+
+// ---------------- TAB 3: 透視隱藏積木 ----------------
+function initTabHidden() {
+  const container = document.getElementById('canvas-hidden');
+  let modelType = 'corner';
+  let showHighlight = false;
+
+  function getBlocks() {
+    const list = [];
+    let hidden = 0;
+    let visible = 0;
+
+    if (modelType === 'corner') {
+      for (let x = 0; x < 3; x++) {
+        for (let z = 0; z < 3; z++) {
+          const isCorner = (x === 0 && z === 0);
+          list.push({
+            id: `h-0-${x}-${z}`, x, y: 0, z,
+            color: isCorner ? '#f59e0b' : '#3b82f6',
+            highlighted: showHighlight && isCorner,
+            label: isCorner ? '藏' : undefined
+          });
+          if (isCorner) hidden++; else visible++;
+        }
+      }
+      list.push({ id: 'h-1-0-0', x: 0, y: 1, z: 0, color: '#f59e0b', highlighted: showHighlight, label: '藏' });
+      hidden++;
+      list.push({ id: 'h-1-1-0', x: 1, y: 1, z: 0, color: '#3b82f6' });
+      list.push({ id: 'h-1-0-1', x: 0, y: 1, z: 1, color: '#3b82f6' });
+      visible += 2;
+      list.push({ id: 'h-2-0-0', x: 0, y: 2, z: 0, color: '#ec4899', label: '頂' });
+      visible++;
+    } else if (modelType === 'podium') {
+      for (let x = 0; x < 3; x++) {
+        for (let z = 0; z < 3; z++) {
+          const isCenter = (x === 1 && z === 1);
+          list.push({
+            id: `h-0-${x}-${z}`, x, y: 0, z,
+            color: isCenter ? '#f59e0b' : '#10b981',
+            highlighted: showHighlight && isCenter,
+            label: isCenter ? '藏' : undefined
+          });
+          if (isCenter) hidden++; else visible++;
+        }
+      }
+      list.push({ id: 'h-1-1-1', x: 1, y: 1, z: 1, color: '#f59e0b', highlighted: showHighlight, label: '藏' });
+      hidden++;
+      list.push({ id: 'h-2-1-1', x: 1, y: 2, z: 1, color: '#ec4899', label: '頂' });
+      visible++;
+    } else {
+      for (let x = 0; x < 3; x++) {
+        for (let z = 0; z < 2; z++) {
+          const isUnder = (z === 0 && x < 2);
+          list.push({
+            id: `h-0-${x}-${z}`, x, y: 0, z,
+            color: isUnder ? '#f59e0b' : '#6366f1',
+            highlighted: showHighlight && isUnder,
+            label: isUnder ? '藏' : undefined
+          });
+          if (isUnder) hidden++; else visible++;
+        }
+      }
+      for (let x = 0; x < 2; x++) {
+        for (let z = 0; z < 2; z++) {
+          const isUnder = (z === 0 && x === 0);
+          list.push({
+            id: `h-1-${x}-${z}`, x, y: 1, z,
+            color: isUnder ? '#f59e0b' : '#8b5cf6',
+            highlighted: showHighlight && isUnder,
+            label: isUnder ? '藏' : undefined
+          });
+          if (isUnder) hidden++; else visible++;
+        }
+      }
+      list.push({ id: 'h-2-0-0', x: 0, y: 2, z: 0, color: '#ec4899' });
+      list.push({ id: 'h-2-0-1', x: 0, y: 2, z: 1, color: '#ec4899' });
+      visible += 2;
+    }
+    return { list, hidden, visible };
+  }
+
+  const { list, hidden, visible } = getBlocks();
+  const renderer = new BlockRenderer3D(container, {
+    blocks: list,
+    colorMode: 'layer',
+    showLabels: showHighlight,
+    allowLayerExplode: true,
+    allowXRay: true,
+    gridSize: { x: 5, z: 5 }
+  });
+  tabRenderers['hidden'] = renderer;
+
+  function update() {
+    const data = getBlocks();
+    renderer.setOptions({
+      blocks: data.list,
+      showLabels: showHighlight
+    });
+    document.getElementById('hidden-visible-val').textContent = `${data.visible} 個`;
+    document.getElementById('hidden-hidden-val').textContent = `+${data.hidden} 個`;
+    document.getElementById('hidden-total-val').textContent = `${data.list.length} cm³`;
+  }
+
+  // Model switch buttons
+  document.querySelectorAll('.btn-hidden-model').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playBlockAddSound();
+      modelType = btn.dataset.model;
+      document.querySelectorAll('.btn-hidden-model').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      update();
+    });
+  });
+
+  // Highlight toggle
+  const btnHighlight = document.getElementById('btn-toggle-hidden-hl');
+  btnHighlight.addEventListener('click', () => {
+    playClickSound();
+    showHighlight = !showHighlight;
+    btnHighlight.classList.toggle('active-preset', showHighlight);
+    btnHighlight.textContent = showHighlight ? '已標記隱藏積木' : '標記隱藏積木 (藏)';
+    update();
+  });
+
+  // Reading button
+  const btnRead = document.getElementById('btn-read-hidden');
+  let isReading = false;
+  btnRead.addEventListener('click', () => {
+    if (isReading) {
+      stopSpeaking();
+      isReading = false;
+      btnRead.classList.remove('reading');
+      btnRead.querySelector('span').textContent = '聽小老師解說';
+    } else {
+      isReading = true;
+      btnRead.classList.add('reading');
+      btnRead.querySelector('span').textContent = '正在解說...';
+      const msg = '很多同學算體積時，常常只數眼睛看得到的表面積木，卻忘記了：上面的積木不可能漂浮在空中，下方一定有隱藏積木在支撐！開啟X光透視眼或滑動分層展開，就能抓出所有隱藏積木喔！';
+      speakText(msg, null, () => {
+        isReading = false;
+        btnRead.classList.remove('reading');
+        btnRead.querySelector('span').textContent = '聽小老師解說';
+      });
+    }
+  });
+
+  // Next tab
+  document.getElementById('btn-next-hidden').addEventListener('click', () => switchTab('composite'));
+}
+
+// ---------------- TAB 4: 複合形體拆解 ----------------
+function initTabComposite() {
+  const container = document.getElementById('canvas-composite');
+  let shape = 'l-shape';
+  let strategy = 'split-v';
+
+  function getCompositeData() {
+    const blocks = [];
+    let fA = '', fB = '', fTotal = '';
+
+    if (shape === 'l-shape') {
+      if (strategy === 'split-v') {
+        for (let x = 0; x < 2; x++) {
+          for (let y = 0; y < 3; y++) {
+            for (let z = 0; z < 2; z++) {
+              blocks.push({ id: `a-${x}-${y}-${z}`, x, y, z, color: '#3b82f6', group: 'A' });
+            }
+          }
+        }
+        for (let x = 2; x < 4; x++) {
+          for (let y = 0; y < 1; y++) {
+            for (let z = 0; z < 2; z++) {
+              blocks.push({ id: `b-${x}-${y}-${z}`, x, y, z, color: '#ec4899', group: 'B' });
+            }
+          }
+        }
+        fA = '左長方體 A：2 × 2 × 3 = 12 cm³';
+        fB = '右長方體 B：2 × 2 × 1 = 4 cm³';
+        fTotal = '體積 = 12 + 4 = 16 立方公分';
+      } else if (strategy === 'split-h') {
+        for (let x = 0; x < 4; x++) {
+          for (let y = 0; y < 1; y++) {
+            for (let z = 0; z < 2; z++) {
+              blocks.push({ id: `b-${x}-${y}-${z}`, x, y, z, color: '#ec4899', group: 'B' });
+            }
+          }
+        }
+        for (let x = 0; x < 2; x++) {
+          for (let y = 1; y < 3; y++) {
+            for (let z = 0; z < 2; z++) {
+              blocks.push({ id: `a-${x}-${y}-${z}`, x, y, z, color: '#3b82f6', group: 'A' });
+            }
+          }
+        }
+        fA = '上方小正方體 A：2 × 2 × 2 = 8 cm³';
+        fB = '下方大底座 B：4 × 2 × 1 = 8 cm³';
+        fTotal = '體積 = 8 + 8 = 16 立方公分';
+      } else {
+        for (let x = 0; x < 4; x++) {
+          for (let y = 0; y < 3; y++) {
+            for (let z = 0; z < 2; z++) {
+              const isMissing = x >= 2 && y >= 1;
+              blocks.push({
+                id: `blk-${x}-${y}-${z}`, x, y, z,
+                color: isMissing ? '#94a3b8' : '#3b82f6',
+                ghost: isMissing,
+                label: isMissing ? '缺' : undefined
+              });
+            }
+          }
+        }
+        fA = '補齊後大長方體：4 × 2 × 3 = 24 cm³';
+        fB = '減去缺角部分：2 × 2 × 2 = 8 cm³';
+        fTotal = '體積 = 24 - 8 = 16 立方公分';
+      }
+    } else if (shape === 'u-shape') {
+      if (strategy === 'fill') {
+        for (let x = 0; x < 3; x++) {
+          for (let y = 0; y < 3; y++) {
+            for (let z = 0; z < 2; z++) {
+              const isHollow = x === 1 && y >= 1;
+              blocks.push({
+                id: `u-${x}-${y}-${z}`, x, y, z,
+                color: isHollow ? '#94a3b8' : '#10b981',
+                ghost: isHollow,
+                label: isHollow ? '缺' : undefined
+              });
+            }
+          }
+        }
+        fA = '完整大長方體：3 × 2 × 3 = 18 cm³';
+        fB = '中間挖空凹洞：1 × 2 × 2 = 4 cm³';
+        fTotal = '體積 = 18 - 4 = 14 立方公分';
+      } else {
+        for (let x = 0; x < 3; x++) {
+          for (let y = 0; y < 3; y++) {
+            for (let z = 0; z < 2; z++) {
+              if (x === 1 && y >= 1) continue;
+              const isSide = x !== 1;
+              blocks.push({ id: `u-${x}-${y}-${z}`, x, y, z, color: isSide ? '#3b82f6' : '#ec4899' });
+            }
+          }
+        }
+        fA = '左右兩根立柱：(1 × 2 × 3) × 2 = 12 cm³';
+        fB = '中間底板：1 × 2 × 1 = 2 cm³';
+        fTotal = '體積 = 12 + 2 = 14 立方公分';
+      }
+    } else {
+      for (let x = 0; x < 3; x++) {
+        for (let y = 0; y < 3; y++) {
+          for (let z = 0; z < 2; z++) {
+            const isPresent = y <= (2 - x);
+            if (strategy === 'fill') {
+              blocks.push({
+                id: `st-${x}-${y}-${z}`, x, y, z,
+                color: isPresent ? '#f59e0b' : '#94a3b8',
+                ghost: !isPresent,
+                label: !isPresent ? '補' : undefined
+              });
+            } else if (isPresent) {
+              const col = y === 0 ? '#3b82f6' : y === 1 ? '#10b981' : '#f59e0b';
+              blocks.push({ id: `st-${x}-${y}-${z}`, x, y, z, color: col });
+            }
+          }
+        }
+      }
+      if (strategy === 'fill') {
+        fA = '補滿大方塊：3 × 2 × 3 = 18 cm³';
+        fB = '減去缺少的積木：6 cm³';
+        fTotal = '體積 = 18 - 6 = 12 立方公分';
+      } else {
+        fA = '第1層底座：3 × 2 × 1 = 6 cm³';
+        fB = '第2層(4cm³) + 第3層(2cm³)';
+        fTotal = '體積 = 6 + 4 + 2 = 12 立方公分';
+      }
+    }
+    return { blocks, fA, fB, fTotal };
+  }
+
+  const renderer = new BlockRenderer3D(container, {
+    blocks: getCompositeData().blocks,
+    colorMode: 'custom',
+    showLabels: false,
+    gridSize: { x: 6, z: 5 }
+  });
+  tabRenderers['composite'] = renderer;
+
+  function update() {
+    const data = getCompositeData();
+    renderer.setOptions({
+      blocks: data.blocks,
+      showLabels: strategy === 'fill'
+    });
+    document.getElementById('comp-formula-a').textContent = data.fA;
+    document.getElementById('comp-formula-b').textContent = data.fB;
+    document.getElementById('comp-formula-total').textContent = data.fTotal;
+    document.getElementById('comp-strategy-label').textContent = strategy === 'fill' ? '補齊法（大減小）' : '切割法（分段加）';
+  }
+
+  // Shape buttons
+  document.querySelectorAll('.btn-comp-shape').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playBlockAddSound();
+      shape = btn.dataset.shape;
+      document.querySelectorAll('.btn-comp-shape').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      const btnH = document.getElementById('btn-comp-strat-h');
+      if (shape !== 'l-shape' && strategy === 'split-h') {
+        strategy = 'split-v';
+        document.querySelectorAll('.btn-comp-strat').forEach(b => b.classList.remove('selected'));
+        document.querySelector('.btn-comp-strat[data-strat="split-v"]').classList.add('selected');
+      }
+      btnH.style.display = shape === 'l-shape' ? 'flex' : 'none';
+      update();
+    });
+  });
+
+  // Strategy buttons
+  document.querySelectorAll('.btn-comp-strat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playClickSound();
+      strategy = btn.dataset.strat;
+      document.querySelectorAll('.btn-comp-strat').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      update();
+    });
+  });
+
+  // Read button
+  const btnRead = document.getElementById('btn-read-composite');
+  let isReading = false;
+  btnRead.addEventListener('click', () => {
+    if (isReading) {
+      stopSpeaking();
+      isReading = false;
+      btnRead.classList.remove('reading');
+      btnRead.querySelector('span').textContent = '聽小老師解說';
+    } else {
+      isReading = true;
+      btnRead.classList.add('reading');
+      btnRead.querySelector('span').textContent = '正在解說...';
+      const text = strategy === 'fill'
+        ? '這是補齊法：我們先把缺角的凹洞補起來，變成一個完整的大長方體，算完大長方體的體積後，再減掉剛才補上的缺角體積，答案就出來了！'
+        : '這是切割法：我們拿一把雷射刀，把奇怪的形狀切成兩個規律的長方體，分別算出體積後相加，答案就出來了！';
+      speakText(text, null, () => {
+        isReading = false;
+        btnRead.classList.remove('reading');
+        btnRead.querySelector('span').textContent = '聽小老師解說';
+      });
+    }
+  });
+
+  // Next tab
+  document.getElementById('btn-next-composite').addEventListener('click', () => switchTab('builder'));
+}
+
+// ---------------- TAB 5: 自由建造室 ----------------
+function initTabBuilder() {
+  const container = document.getElementById('canvas-builder');
+  let blocks = [
+    { id: 'b0', x: 2, y: 0, z: 2, color: '#3b82f6' },
+    { id: 'b1', x: 2, y: 1, z: 2, color: '#10b981' },
+    { id: 'b2', x: 3, y: 0, z: 2, color: '#3b82f6' }
+  ];
+  let selectedColor = '#3b82f6';
+  let toolMode = 'build';
+
+  const PRESETS = {
+    heart: [
+      { x: 2, y: 0, z: 2, color: '#ec4899' }, { x: 1, y: 1, z: 2, color: '#ec4899' },
+      { x: 2, y: 1, z: 2, color: '#ec4899' }, { x: 3, y: 1, z: 2, color: '#ec4899' },
+      { x: 0, y: 2, z: 2, color: '#ec4899' }, { x: 1, y: 2, z: 2, color: '#ec4899' },
+      { x: 2, y: 2, z: 2, color: '#ec4899' }, { x: 3, y: 2, z: 2, color: '#ec4899' },
+      { x: 4, y: 2, z: 2, color: '#ec4899' }, { x: 0, y: 3, z: 2, color: '#ec4899' },
+      { x: 1, y: 3, z: 2, color: '#ec4899' }, { x: 3, y: 3, z: 2, color: '#ec4899' },
+      { x: 4, y: 3, z: 2, color: '#ec4899' }
+    ],
+    puppy: [
+      { x: 1, y: 0, z: 1, color: '#f59e0b' }, { x: 3, y: 0, z: 1, color: '#f59e0b' },
+      { x: 1, y: 0, z: 3, color: '#f59e0b' }, { x: 3, y: 0, z: 3, color: '#f59e0b' },
+      { x: 1, y: 1, z: 1, color: '#f59e0b' }, { x: 2, y: 1, z: 1, color: '#f59e0b' },
+      { x: 3, y: 1, z: 1, color: '#f59e0b' }, { x: 1, y: 1, z: 2, color: '#f59e0b' },
+      { x: 2, y: 1, z: 2, color: '#f59e0b' }, { x: 3, y: 1, z: 2, color: '#f59e0b' },
+      { x: 1, y: 1, z: 3, color: '#f59e0b' }, { x: 2, y: 1, z: 3, color: '#f59e0b' },
+      { x: 3, y: 1, z: 3, color: '#f59e0b' }, { x: 1, y: 2, z: 1, color: '#f59e0b' },
+      { x: 2, y: 2, z: 1, color: '#f59e0b' }, { x: 1, y: 3, z: 1, color: '#b45309' },
+      { x: 2, y: 3, z: 1, color: '#b45309' }, { x: 2, y: 2, z: 3, color: '#b45309' }
+    ],
+    castle: [
+      { x: 1, y: 0, z: 1, color: '#3b82f6' }, { x: 2, y: 0, z: 1, color: '#3b82f6' }, { x: 3, y: 0, z: 1, color: '#3b82f6' },
+      { x: 1, y: 0, z: 2, color: '#3b82f6' }, { x: 2, y: 0, z: 2, color: '#3b82f6' }, { x: 3, y: 0, z: 2, color: '#3b82f6' },
+      { x: 1, y: 0, z: 3, color: '#3b82f6' }, { x: 2, y: 0, z: 3, color: '#3b82f6' }, { x: 3, y: 0, z: 3, color: '#3b82f6' },
+      { x: 1, y: 1, z: 1, color: '#60a5fa' }, { x: 3, y: 1, z: 1, color: '#60a5fa' },
+      { x: 2, y: 1, z: 2, color: '#60a5fa' }, { x: 1, y: 1, z: 3, color: '#60a5fa' },
+      { x: 3, y: 1, z: 3, color: '#60a5fa' }, { x: 1, y: 2, z: 1, color: '#93c5fd' },
+      { x: 3, y: 2, z: 1, color: '#93c5fd' }, { x: 1, y: 2, z: 3, color: '#93c5fd' },
+      { x: 3, y: 2, z: 3, color: '#93c5fd' }
+    ],
+    robot: [
+      { x: 1, y: 0, z: 2, color: '#475569' }, { x: 3, y: 0, z: 2, color: '#475569' },
+      { x: 1, y: 1, z: 2, color: '#64748b' }, { x: 3, y: 1, z: 2, color: '#64748b' },
+      { x: 1, y: 2, z: 2, color: '#06b6d4' }, { x: 2, y: 2, z: 2, color: '#06b6d4' },
+      { x: 3, y: 2, z: 2, color: '#06b6d4' }, { x: 1, y: 3, z: 2, color: '#06b6d4' },
+      { x: 2, y: 3, z: 2, color: '#06b6d4' }, { x: 3, y: 3, z: 2, color: '#06b6d4' },
+      { x: 0, y: 3, z: 2, color: '#38bdf8' }, { x: 4, y: 3, z: 2, color: '#38bdf8' },
+      { x: 2, y: 4, z: 2, color: '#f59e0b' }
+    ]
+  };
+
+  const renderer = new BlockRenderer3D(container, {
+    blocks,
+    colorMode: 'custom',
+    gridSize: { x: 6, z: 6 },
+    allowLayerExplode: true,
+    emptyText: '點擊地板格線放第一顆積木！',
+    onEmptyGridClick: (gx, gz) => {
+      if (toolMode === 'delete') return;
+      const exists = blocks.some(b => b.x === gx && b.y === 0 && b.z === gz);
+      if (!exists) {
+        playBlockAddSound();
+        blocks.push({ id: `b-${Date.now()}-${Math.random()}`, x: gx, y: 0, z: gz, color: selectedColor });
+        update();
+      }
+    },
+    onBlockClick: (block, faceName) => {
+      if (toolMode === 'delete') {
+        playBlockRemoveSound();
+        blocks = blocks.filter(b => b.id !== block.id);
+        update();
+        return;
+      }
+      let nx = block.x, ny = block.y, nz = block.z;
+      if (faceName === 'top') ny += 1;
+      else if (faceName === 'bottom') ny -= 1;
+      else if (faceName === 'front') nz += 1;
+      else if (faceName === 'back') nz -= 1;
+      else if (faceName === 'right') nx += 1;
+      else if (faceName === 'left') nx -= 1;
+
+      if (nx < 0 || nx > 5 || nz < 0 || nz > 5 || ny < 0 || ny > 5) return;
+      if (blocks.some(b => b.x === nx && b.y === ny && b.z === nz)) return;
+
+      playBlockAddSound();
+      blocks.push({ id: `b-${Date.now()}-${Math.random()}`, x: nx, y: ny, z: nz, color: selectedColor });
+      update();
+    }
+  });
+  tabRenderers['builder'] = renderer;
+
+  function update() {
+    renderer.setBlocks(blocks);
+    document.getElementById('builder-total-badge').textContent = `${blocks.length} cm³`;
+
+    // Layer stats
+    const stats = {};
+    blocks.forEach(b => { stats[b.y] = (stats[b.y] || 0) + 1; });
+    const statsContainer = document.getElementById('builder-layer-stats');
+    const layers = Object.keys(stats).sort((a,b) => Number(a)-Number(b));
+    if (layers.length === 0) {
+      statsContainer.innerHTML = '<span style="color:#94a3b8">尚未放置積木</span>';
+    } else {
+      statsContainer.innerHTML = layers.map(l =>
+        `<span style="padding:4px 8px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-weight:700">第 ${Number(l)+1} 層：<b style="color:#d97706">${stats[l]}</b> 個</span>`
+      ).join('');
+    }
+  }
+
+  // Tool mode toggle
+  const btnBuild = document.getElementById('btn-tool-build');
+  const btnDelete = document.getElementById('btn-tool-delete');
+  btnBuild.addEventListener('click', () => {
+    playClickSound();
+    toolMode = 'build';
+    btnBuild.className = 'btn-toggle-feature active';
+    btnDelete.className = 'btn-toggle-feature';
+  });
+  btnDelete.addEventListener('click', () => {
+    playClickSound();
+    toolMode = 'delete';
+    btnDelete.className = 'btn-toggle-feature active';
+    btnBuild.className = 'btn-toggle-feature';
+  });
+
+  // Clear all
+  document.getElementById('btn-builder-clear').addEventListener('click', () => {
+    playBlockRemoveSound();
+    blocks = [];
+    update();
+  });
+
+  // Palette dots
+  document.querySelectorAll('.color-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      playClickSound();
+      selectedColor = dot.dataset.color;
+      document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+      toolMode = 'build';
+      btnBuild.className = 'btn-toggle-feature active';
+      btnDelete.className = 'btn-toggle-feature';
+    });
+  });
+
+  // Preset buttons
+  document.querySelectorAll('.btn-preset-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playBlockAddSound();
+      const pKey = btn.dataset.preset;
+      if (PRESETS[pKey]) {
+        blocks = PRESETS[pKey].map((b, idx) => ({ ...b, id: `p-${idx}` }));
+        update();
+      }
+    });
+  });
+
+  // Next tab
+  document.getElementById('btn-next-builder').addEventListener('click', () => switchTab('quiz'));
+  update();
+}
+
+// ---------------- TAB 6: 冒險闖關大挑戰 ----------------
+function initTabQuiz() {
+  const container = document.getElementById('canvas-quiz');
+  let currentIdx = 0;
+  let selectedOption = null;
+  let isAnswered = false;
+  let showHint = false;
+
+  const renderer = new BlockRenderer3D(container, {
+    blocks: QUIZ_QUESTIONS[0].blocks,
+    colorMode: 'layer',
+    allowLayerExplode: true,
+    allowXRay: true,
+    gridSize: { x: 6, z: 6 }
+  });
+  tabRenderers['quiz'] = renderer;
+
+  function renderQuestion() {
+    const q = QUIZ_QUESTIONS[currentIdx];
+    renderer.setBlocks(q.blocks);
+
+    document.getElementById('quiz-badge').textContent = q.badge;
+    document.getElementById('quiz-step-info').textContent = `第 ${currentIdx + 1} / ${QUIZ_QUESTIONS.length} 題`;
+    document.getElementById('quiz-progress-bar').style.width = `${((currentIdx + 1) / QUIZ_QUESTIONS.length) * 100}%`;
+    document.getElementById('quiz-question-title').textContent = `${q.title}：${q.questionText}`;
+
+    // Options
+    const optContainer = document.getElementById('quiz-options-container');
+    optContainer.innerHTML = '';
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-quiz-opt';
+      btn.innerHTML = `<span class="opt-val">${opt}</span><span class="opt-unit">${q.unit}</span>`;
+      btn.addEventListener('click', () => handleOptionSelect(opt));
+      optContainer.appendChild(btn);
+    });
+
+    document.getElementById('quiz-feedback-box').style.display = 'none';
+    document.getElementById('quiz-hint-card').style.display = 'none';
+    document.getElementById('btn-next-question').style.display = 'none';
+    showHint = false;
+    isAnswered = false;
+    selectedOption = null;
+  }
+
+  function handleOptionSelect(opt) {
+    if (isAnswered) return;
+    isAnswered = true;
+    selectedOption = opt;
+    const q = QUIZ_QUESTIONS[currentIdx];
+    const isCorrect = (opt === q.correctAnswer);
+
+    // Style option buttons
+    const optButtons = document.querySelectorAll('.btn-quiz-opt');
+    optButtons.forEach(btn => {
+      btn.disabled = true;
+      const val = parseInt(btn.querySelector('.opt-val').textContent);
+      if (val === q.correctAnswer) {
+        btn.classList.add('opt-correct');
+      } else if (val === opt) {
+        btn.classList.add('opt-wrong');
+      } else {
+        btn.classList.add('opt-dim');
+      }
+    });
+
+    const feedback = document.getElementById('quiz-feedback-box');
+    feedback.style.display = 'block';
+
+    if (isCorrect) {
+      playSuccessSound();
+      quizScore += 10;
+      document.getElementById('quiz-score-display').textContent = `目前得分：${quizScore} 分`;
+      document.getElementById('header-quiz-score').textContent = `★ ${quizScore} 分`;
+      launchConfetti(80);
+      feedback.className = 'callout-box callout-blue';
+      feedback.innerHTML = `
+        <div style="font-weight:900;margin-bottom:6px;color:#065f46">🎉 太棒了！答對了！+10分</div>
+        <div>${q.explanation}</div>
+        <div style="margin-top:6px;font-family:monospace;font-weight:800;color:#047857">📐 算式：${q.formulaStep}</div>
+      `;
+    } else {
+      playIncorrectSound();
+      feedback.className = 'callout-box callout-amber';
+      feedback.innerHTML = `
+        <div style="font-weight:900;margin-bottom:6px;color:#b45309">哎呀差一點點！正確答案是 ${q.correctAnswer} ${q.unit}</div>
+        <div>${q.explanation}</div>
+        <div style="margin-top:6px;font-family:monospace;font-weight:800;color:#92400e">📐 算式：${q.formulaStep}</div>
+      `;
+    }
+
+    const nextBtn = document.getElementById('btn-next-question');
+    nextBtn.style.display = 'flex';
+    nextBtn.querySelector('span').textContent = (currentIdx < QUIZ_QUESTIONS.length - 1) ? '前進下一關！' : '查看最終榮譽成績';
+  }
+
+  // Next Question Button
+  document.getElementById('btn-next-question').addEventListener('click', () => {
+    playClickSound();
+    if (currentIdx < QUIZ_QUESTIONS.length - 1) {
+      currentIdx++;
+      renderQuestion();
+    } else {
+      // Completed all!
+      showCompletionScreen();
+    }
+  });
+
+  // Hint Toggle
+  document.getElementById('btn-toggle-quiz-hint').addEventListener('click', () => {
+    playClickSound();
+    showHint = !showHint;
+    const card = document.getElementById('quiz-hint-card');
+    card.style.display = showHint ? 'block' : 'none';
+    card.textContent = `💡 解題提示：${QUIZ_QUESTIONS[currentIdx].hint}`;
+  });
+
+  // Read Question
+  const btnRead = document.getElementById('btn-read-quiz');
+  let isReading = false;
+  btnRead.addEventListener('click', () => {
+    if (isReading) {
+      stopSpeaking();
+      isReading = false;
+      btnRead.classList.remove('reading');
+      btnRead.querySelector('span').textContent = '讀題目';
+    } else {
+      isReading = true;
+      btnRead.classList.add('reading');
+      btnRead.querySelector('span').textContent = '朗讀中';
+      const q = QUIZ_QUESTIONS[currentIdx];
+      const text = `${q.title}。${q.questionText}`;
+      speakText(text, null, () => {
+        isReading = false;
+        btnRead.classList.remove('reading');
+        btnRead.querySelector('span').textContent = '讀題目';
+      });
+    }
+  });
+
+  function showCompletionScreen() {
+    launchConfetti(150);
+    document.getElementById('quiz-stage-area').style.display = 'none';
+    const compScreen = document.getElementById('quiz-completion-screen');
+    compScreen.style.display = 'block';
+
+    const starCount = quizScore >= 90 ? 3 : quizScore >= 60 ? 2 : 1;
+    document.getElementById('quiz-stars-display').innerHTML = [1, 2, 3].map(s =>
+      `<span style="color:${s <= starCount ? '#f59e0b' : '#cbd5e1'};margin:0 4px">★</span>`
+    ).join('');
+
+    document.getElementById('quiz-final-score').textContent = quizScore;
+    document.getElementById('quiz-final-comment').textContent = quizScore >= 90
+      ? '太神了！滿分級別的空間立體思維！'
+      : '很棒的表現！多練習幾次會更熟練喔！';
+  }
+
+  // Restart Quiz
+  document.getElementById('btn-quiz-retry').addEventListener('click', () => {
+    playClickSound();
+    currentIdx = 0;
+    quizScore = 0;
+    document.getElementById('quiz-score-display').textContent = `目前得分：0 分`;
+    document.getElementById('header-quiz-score').textContent = `★ 0 分`;
+    document.getElementById('quiz-stage-area').style.display = 'block';
+    document.getElementById('quiz-completion-screen').style.display = 'none';
+    renderQuestion();
+  });
+
+  document.getElementById('btn-quiz-review').addEventListener('click', () => {
+    switchTab('concept');
+  });
+
+  renderQuestion();
+}
+
+// Bind Floating 3D Controls
+function bindCanvasControls() {
+  document.querySelectorAll('.canvas-frame').forEach(frame => {
+    const tabName = frame.dataset.tab;
+    const getR = () => tabRenderers[tabName];
+
+    // Presets
+    frame.querySelectorAll('.btn-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const r = getR();
+        if (r) {
+          playClickSound();
+          r.setPreset(btn.dataset.view);
+          frame.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active-preset'));
+          btn.classList.add('active-preset');
+        }
+      });
+    });
+
+    // Zoom & Reset
+    const btnZoomIn = frame.querySelector('.btn-zoom-in');
+    const btnZoomOut = frame.querySelector('.btn-zoom-out');
+    const btnReset = frame.querySelector('.btn-reset-view');
+
+    if (btnZoomIn) btnZoomIn.addEventListener('click', () => {
+      const r = getR();
+      if (r) { playClickSound(); r.zoom = Math.min(2.3, r.zoom + 0.15); r.draw(); }
+    });
+    if (btnZoomOut) btnZoomOut.addEventListener('click', () => {
+      const r = getR();
+      if (r) { playClickSound(); r.zoom = Math.max(0.6, r.zoom - 0.15); r.draw(); }
+    });
+    if (btnReset) btnReset.addEventListener('click', () => {
+      const r = getR();
+      if (r) { playClickSound(); r.resetView(); }
+    });
+
+    // X-Ray Toggle
+    const btnXRay = frame.querySelector('.btn-toggle-xray');
+    if (btnXRay) btnXRay.addEventListener('click', () => {
+      const r = getR();
+      if (r) {
+        playClickSound();
+        r.isXRay = !r.isXRay;
+        btnXRay.classList.toggle('active', r.isXRay);
+        btnXRay.querySelector('.xray-text').textContent = r.isXRay ? '透視眼 開' : '透視眼 關';
+        r.draw();
+      }
+    });
+
+    // Grid Toggle
+    const btnGrid = frame.querySelector('.btn-toggle-grid');
+    if (btnGrid) btnGrid.addEventListener('click', () => {
+      const r = getR();
+      if (r) {
+        playClickSound();
+        r.showGrid = !r.showGrid;
+        btnGrid.classList.toggle('active', r.showGrid);
+        r.draw();
+      }
+    });
+
+    // Layer Explode Slider
+    const rangeExplode = frame.querySelector('.range-explode');
+    if (rangeExplode) rangeExplode.addEventListener('input', (e) => {
+      const r = getR();
+      if (r) {
+        r.explodeGap = parseFloat(e.target.value);
+        const label = frame.querySelector('.explode-val-label');
+        if (label) label.textContent = r.explodeGap > 0 ? `${(r.explodeGap * 10).toFixed(0)}格` : '合';
+        r.draw();
+      }
+    });
+  });
+}
+
+// Application Startup
+document.addEventListener('DOMContentLoaded', () => {
+  // Nav tabs listeners
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  initSoundToggle();
+  initKnowledgeModal();
+
+  initTabConcept();
+  initTabFormula();
+  initTabHidden();
+  initTabComposite();
+  initTabBuilder();
+  initTabQuiz();
+
+  bindCanvasControls();
+});
+
+
+  </script>
+</body>
+</html>
